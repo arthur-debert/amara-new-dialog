@@ -9,6 +9,7 @@ function SubtitleList($scope, subtitleList) {
         subtitleList.removeSubtitle(subtitle);
     };
     $scope.addSubtitle = function(text){
+        $scope.mustScrollToBottom = true;
         subtitleList.addSubtitle({'text':text})
         $scope.newSubtitleText = '';
     }

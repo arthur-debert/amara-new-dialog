@@ -13,6 +13,7 @@ function SubtitleList($scope, subtitleList) {
     };
     $scope.addSubtitle = function(text){
         subtitleList.addSubtitle({'text':text})
+        $scope.newSubtitleText = '';
     }
 }
 //SubtitleList.$inject(["$scope", "subtitleList"])

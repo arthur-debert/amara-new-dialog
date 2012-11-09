@@ -1,7 +1,7 @@
 <div ng-controller="SubtitleList">
+    <form ng-submit='addSubtitle(newSubtitleText)'>
     <input ng-model="newSubtitleText" />
-    <button ng-click='addSubtitle(newSubtitleText)'>Add</button><br>
-    <span ng-repeat='subtitle in subtitles'>{{subtitle.text}};</span>
+        </form>
     <hr>
     <ul>
         <li ng-repeat='subtitle in subtitles' >

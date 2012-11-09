@@ -28,3 +28,14 @@
   content: "";
   padding: 0;
 }
+
+form.quickAddSubtitle{
+    height: 40px;
+}
+
+ul.subtitleList{
+    position: relative;
+    overflow: auto;
+    height: 500px;
+    width: 300px;
+}

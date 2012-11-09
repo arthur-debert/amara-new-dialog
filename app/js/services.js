@@ -41,4 +41,3 @@ subtitleDataServices.factory('subtitleList', function () {
             }
         }
 });
-console.log('created', subtitleDataServices)

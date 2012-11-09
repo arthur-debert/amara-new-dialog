@@ -3,9 +3,11 @@
 /* Directives */
 
 
-angular.module('myApp.directives', []).
-  directive('appVersion', ['version', function(version) {
-    return function(scope, elm, attrs) {
-      elm.text(version);
+var directives = angular.module('myApp.directives', []);
+directives.directive('amaraEditableSubtitle', function() {
+    return {
+        link: function(scope, elm, attrs){
+            window.scrollTo(0, elm.offsetTop - 100)
+        }
     };
-  }]);
+  });

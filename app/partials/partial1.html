@@ -1,10 +1,9 @@
-<div ng-controller="SubtitleList">
-    <form ng-submit='addSubtitle(newSubtitleText)'>
-    <input ng-model="newSubtitleText" />
-        </form>
-    <hr>
-    <ul>
-        <li ng-repeat='subtitle in subtitles' >
+<div >
+    <form class="quickAddSubtitle" ng-submit='addSubtitle(newSubtitleText)'>
+    <input ng-model="newSubtitleText" required/>
+    </form>
+    <ul class="subtitleList">
+        <li ng-repeat='subtitle in subtitles' amara-editable-subtitle>
             <span>{{subtitle.start_time}} -- {{subtitle.end_time}}</span><br>
             <textarea ng-model="subtitle.text" ng-bind='subtitle.text'>{{subtitle.text}}</textarea>
             <a href="#" ng-click="removeSubtitle(subtitle)">X</a>

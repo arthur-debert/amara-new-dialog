@@ -1,0 +1,12 @@
+<div ng-controller="SubtitleList">
+    <span ng-repeat='caption in captions'>{{caption.text}};</span>
+    <hr>
+    <ul>
+        <li ng-repeat='caption in captions' >
+            <span>{{caption.start_time}} -- {{caption.end_time}}</span><br>
+            <textarea ng-model="caption.text" ng-bind='caption.text'>{{caption.text}}</textarea>
+            <a href="#" ng-click="removeSubtitle(caption)">X</a>
+        </li>
+    </ul>
+</div>
+

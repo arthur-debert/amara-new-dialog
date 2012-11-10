@@ -13,6 +13,9 @@ function SubtitleList($scope, subtitleList) {
         subtitleList.addSubtitle({'text':text})
         $scope.newSubtitleText = '';
     }
+    $scope.resetSubtitling = function(){
+        $scope.subtitles = subtitleList.resetStep('beforeSubtitling');
+    }
 }
 //SubtitleList.$inject(["$scope", "subtitleList"])
 

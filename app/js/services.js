@@ -5,6 +5,7 @@
 
 var subtitleDataServices = angular.module('myApp.subtitleDataServices', []);
 subtitleDataServices.factory('subtitleList', function () {
+    var resetData = {};
     var subtitles = [];
     for (var i = 0; i < 100; i++) {
         subtitles.push({
@@ -13,6 +14,7 @@ subtitleDataServices.factory('subtitleList', function () {
             end_time:(i * 1000) + 1000
         });
     }
+    resetData['beforeSubtitling'] = subtitles.slice(0);
         return {
             get:function () {
                 return subtitles;
@@ -38,6 +40,13 @@ subtitleDataServices.factory('subtitleList', function () {
                 }
                 subtitles.splice(index, 0, subtitle);
 
+            },
+            resetStep: function (stepName){
+                if (resetData[stepName]){
+                    subtitles = resetData[stepName].slice(0);
+                    return subtitles;
+                }
+                throw Error("No such step");
             }
         }
 });

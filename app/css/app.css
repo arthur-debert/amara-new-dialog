@@ -39,3 +39,18 @@ ul.subtitleList{
     height: 500px;
     width: 300px;
 }
+
+ul.timeline{
+   list-style: none;
+}
+
+ul.timeline li{
+    position: relative;
+    float: left;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

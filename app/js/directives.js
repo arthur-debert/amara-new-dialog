@@ -60,7 +60,7 @@ directives.directive('syncTimeline', function(){
         link: function(scope, elm, attrs){
             var timelineContainer = $("ul");
             timelineContainer.css("width", viewWidth + "px");
-
+            var xOffset = timeToPixels(startTime);
             var markerTimes = getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView);
             console.log(markerTimes);
             _.each(markerTimes, function(markerTime, i){
@@ -72,7 +72,7 @@ directives.directive('syncTimeline', function(){
                     ticker.addClass("timelineTicker");
                 }
                 // position
-                var xPos = timeToPixels(markerTime);
+                var xPos = timeToPixels(markerTime) - xOffset;
                 ticker.css("left", xPos);
                 timelineContainer.append(ticker);
 

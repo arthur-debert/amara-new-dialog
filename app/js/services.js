@@ -1,19 +1,24 @@
 'use strict';
 
 /* Services */
-
+function randIntRange(min, max){
+    return Math.floor(min + (Math.random() * max ));
+}
 
 var subtitleDataServices = angular.module('myApp.subtitleDataServices', []);
 subtitleDataServices.factory('subtitleList', function () {
     var resetData = {};
     var subtitles = [];
-    var currentStart = 0;
+    var currentTime = 0;
+    var bacon = "Bacon ipsum dolor sit amet meatloaf kielbasa turducken tail, cow leberkas prosciutto shoulder chuck pork chop turkey swine sausage. Swine beef bacon sausage bresaola. Tri-tip pastrami meatball meatloaf sausage brisket pork chop, ham drumstick shank venison shankle. Pancetta fatback drumstick, leberkas spare ribs chuck pastrami tail biltong prosciutto bacon. Sirloin jerky tongue turkey kielbasa. Strip steak andouille short loin, tail fatback ham hock leberkas pancetta boudin tri-tip tongue. Hamburger t-bone brisket kielbasa."
     for (var i = 0; i < 100; i++) {
+        var duration = randIntRange(300, 3000);
         subtitles.push({
-            text:"Caption " + i,
-            start_time:i * 1000,
-            end_time:(i * 1000) + 1000
+            text: i + ") " + bacon.substr(0, randIntRange(8, 72)),
+            start_time: currentTime,
+            end_time: currentTime + duration,
         });
+        currentTime += duration;
     }
     resetData['beforeSubtitling'] = subtitles.slice(0);
         return {

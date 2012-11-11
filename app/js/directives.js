@@ -22,7 +22,7 @@ directives.directive('amaraEditableSubtitle', function() {
         }
     };
 });
-directives.directive('syncTimeline', function(subtitleList){
+directives.directive('syncPanel', function(subtitleList){
     /**
      * The time line is composed of two parts.
      * The strip with the time markers (which is draggeable)
@@ -68,6 +68,7 @@ directives.directive('syncTimeline', function(subtitleList){
     function redrawTimeline(timelineEl, currentTime, subtitles){
 
         $(timelineEl).children().remove();
+        $(subtitleBubbleListEl).children().remove();
         var xOffset = timeToPixels(currentTime);
         var markerTimes = getMarkerTimes(currentTime, markerEveryMilliseconds, millisecondsPerView);
         _.each(markerTimes, function(markerTime, i){
@@ -97,6 +98,7 @@ directives.directive('syncTimeline', function(subtitleList){
             }
 
         }
+        //subtitleBubbleListEl.children().remove();
         _.each(subtitlesInView, function(subtitle,i){
             var subtitleBubble = $("<div>");
             subtitleBubble.text(subtitle.text);
@@ -133,8 +135,8 @@ directives.directive('syncTimeline', function(subtitleList){
         link: function(scope, elm, attrs){
             var dragTimeout = undefined;
             timelineEl= $("ul");
-            subtitleBubbleListEl = $("div");
-            subtitleBubbleListEl.addClass("subtitleBubbleList")
+
+            subtitleBubbleListEl = $("div.subtitleBubbleList", elm);
             timelineEl.css("width", viewWidth + "px");
             redrawTimeline(timelineEl, currentTime);
             function onStartTimelineDrag (e){
@@ -150,6 +152,7 @@ directives.directive('syncTimeline', function(subtitleList){
             // atach drag and drop
             timelineEl.mousedown( onStartTimelineDrag);
             $(document).mouseup( onStopDragging);
+
         }
     }
 });

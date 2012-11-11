@@ -7,6 +7,7 @@ var subtitleDataServices = angular.module('myApp.subtitleDataServices', []);
 subtitleDataServices.factory('subtitleList', function () {
     var resetData = {};
     var subtitles = [];
+    var currentStart = 0;
     for (var i = 0; i < 100; i++) {
         subtitles.push({
             text:"Caption " + i,

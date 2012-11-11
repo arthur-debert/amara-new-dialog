@@ -42,6 +42,10 @@ ul.subtitleList{
 
 ul.timeline{
    list-style: none;
+    cursor: pointer;
+    background: gray ;
+    height:30px;
+    padding: 10px;
 }
 
 ul.timeline li{
@@ -54,3 +58,18 @@ ul.timeline li{
     -ms-user-select: none;
     user-select: none;
 }
+div.subtitleBubbleList {
+    position: relative;
+    cursor: pointer;
+    background: gray ;
+    height:30px;
+    padding: 10px;
+
+}
+div.subtitleBubbleList div.subtitleBubble{
+    float:left;
+    background-color: gray;
+    color: white;
+    border: 1px solid black;
+}
+

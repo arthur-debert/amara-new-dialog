@@ -22,7 +22,7 @@ directives.directive('amaraEditableSubtitle', function() {
         }
     };
 });
-directives.directive('syncTimeline', function(){
+directives.directive('syncTimeline', function(subtitleList){
     /**
      * The time line is composed of two parts.
      * The strip with the time markers (which is draggeable)
@@ -30,6 +30,7 @@ directives.directive('syncTimeline', function(){
      * @type {undefined}
      */
     var timelineEl = undefined;
+    var subtitleBubbleListEl = undefined;
     var viewWidth = 600;
     var zoomLevel = 1;
     // normalized to zoom level 1
@@ -64,7 +65,7 @@ directives.directive('syncTimeline', function(){
         return times;
     }
 
-    function redrawTimeline(timelineEl, currentTime){
+    function redrawTimeline(timelineEl, currentTime, subtitles){
 
         $(timelineEl).children().remove();
         var xOffset = timeToPixels(currentTime);
@@ -83,6 +84,29 @@ directives.directive('syncTimeline', function(){
             timelineEl.append(ticker);
 
         });
+        var subtitles = subtitleList.get();
+        var subtitlesInView = [];
+        var endTime = currentTime + millisecondsPerView;
+        for (var i = 0; i < subtitles.length; i ++){
+            var subtitle = subtitles[i];
+            if (subtitle.start_time > endTime ){
+                break;
+            }
+            if (subtitle.start_time > currentTime || (subtitle.end_time  > currentTime && subtitle.end_time < endTime )){
+                subtitlesInView.push(subtitle);
+            }
+
+        }
+        _.each(subtitlesInView, function(subtitle,i){
+            var subtitleBubble = $("<div>");
+            subtitleBubble.text(subtitle.text);
+            var left = timeToPixels(subtitle.start_time) - xOffset;
+            var width = timeToPixels(subtitle.end_time - subtitle.start_time);
+            subtitleBubble.css('left', left);
+            subtitleBubble.css('width', width);
+            subtitleBubble.addClass('subtitleBubble');
+            subtitleBubbleListEl.append(subtitleBubble);
+        })
     }
 
     function registerMouse(e){
@@ -109,6 +133,8 @@ directives.directive('syncTimeline', function(){
         link: function(scope, elm, attrs){
             var dragTimeout = undefined;
             timelineEl= $("ul");
+            subtitleBubbleListEl = $("div");
+            subtitleBubbleListEl.addClass("subtitleBubbleList")
             timelineEl.css("width", viewWidth + "px");
             redrawTimeline(timelineEl, currentTime);
             function onStartTimelineDrag (e){

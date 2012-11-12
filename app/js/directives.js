@@ -4,7 +4,7 @@
 
 
 var directives = angular.module('myApp.directives', []);
-directives.directive('amaraEditableSubtitle', function() {
+directives.directive('amaraEditableSubtitle', function(currentPlayerTime) {
     return {
         link: function(scope, elm, attrs){
             var el = angular.element(elm[0]);
@@ -19,6 +19,11 @@ directives.directive('amaraEditableSubtitle', function() {
                 var parent = elm[0].parentElement;
                 parent.scrollTop = parent.scrollHeight - parent.offsetHeight;
                 scope.mustScrollToBottom = false;
+            }
+            var currentTime =  currentPlayerTime.get();
+            if (scope.subtitle.start_time > currentTime &&
+                scope.subtitle.end_time < currentTime){
+                el.addClass("currentlyPlaying");
             }
         }
     };
@@ -64,7 +69,15 @@ directives.directive('syncPanel', function(subtitleList, currentPlayerTime){
         }
         return times;
     }
-
+    function onSubtitleBubbleMouseMove(element, subtitle, event){
+        var cursorType = 'move';
+        var x = event.pageX - $(element).offset().left;
+        var RESIZE_HIT_AREA = 10;
+        if (x <= RESIZE_HIT_AREA || x >= $(element).width() - RESIZE_HIT_AREA){
+            cursorType = 'col-resize';
+        }
+        $(element).css('cursor', cursorType);
+    }
     function redrawTimeline(timebarEl, currentTime, subtitles){
 
         $(timebarEl).children().remove();
@@ -106,6 +119,9 @@ directives.directive('syncPanel', function(subtitleList, currentPlayerTime){
             subtitleBubble.css('left', left);
             subtitleBubble.css('width', width);
             subtitleBubble.addClass('subtitleBubble');
+            subtitleBubble.mousemove( function(event){
+                onSubtitleBubbleMouseMove(subtitleBubble, subtitle, event);
+            });
             timelineEl.append(subtitleBubble);
         })
     }

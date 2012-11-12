@@ -112,6 +112,9 @@ ul.subtitleList{
     overflow: auto;
     height: 500px;
 }
+ul.subtitleList li.active{
+    background-color: #87ceeb;
+}
 .subtitlesVertical .subtitleList{
     width: 50%;
     float: right;

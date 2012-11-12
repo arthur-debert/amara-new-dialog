@@ -20,7 +20,7 @@ $provide.factory('subtitleList', function () {
             start_time: currentTime,
             end_time: currentTime + duration,
         });
-        currentTime += duration;
+        currentTime += duration + randIntRange(200, 3000);
     }
     resetData['beforeSubtitling'] = subtitles.slice(0);
         return {

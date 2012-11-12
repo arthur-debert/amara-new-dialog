@@ -13,6 +13,7 @@ directives.directive('amaraEditableSubtitle', function() {
                 scope.$apply(function() {
                     scope.subtitle.text = $(editableParagrah).text();
                 });
+                scope.$emit("subtitleChanged")
             }, false);
             if (scope.mustScrollToBottom ){
                 var parent = elm[0].parentElement;
@@ -22,15 +23,15 @@ directives.directive('amaraEditableSubtitle', function() {
         }
     };
 });
-directives.directive('syncPanel', function(subtitleList){
+directives.directive('syncPanel', function(subtitleList, currentPlayerTime){
     /**
      * The time line is composed of two parts.
      * The strip with the time markers (which is draggeable)
      * and the timelineSubtitleList, containing the balloons with those subs
      * @type {undefined}
      */
+    var timebarEl = undefined;
     var timelineEl = undefined;
-    var subtitleBubbleListEl = undefined;
     var viewWidth = 600;
     var zoomLevel = 1;
     // normalized to zoom level 1
@@ -40,7 +41,6 @@ directives.directive('syncPanel', function(subtitleList){
 
 
     var markerEveryMilliseconds = 500;
-    var currentTime = 0;
 
     function timeToPixels(time){
         return time * pixelsPerMillisecond;
@@ -65,10 +65,10 @@ directives.directive('syncPanel', function(subtitleList){
         return times;
     }
 
-    function redrawTimeline(timelineEl, currentTime, subtitles){
+    function redrawTimeline(timebarEl, currentTime, subtitles){
 
+        $(timebarEl).children().remove();
         $(timelineEl).children().remove();
-        $(subtitleBubbleListEl).children().remove();
         var xOffset = timeToPixels(currentTime);
         var markerTimes = getMarkerTimes(currentTime, markerEveryMilliseconds, millisecondsPerView);
         _.each(markerTimes, function(markerTime, i){
@@ -82,7 +82,7 @@ directives.directive('syncPanel', function(subtitleList){
             // position
             var xPos = timeToPixels(markerTime) - xOffset;
             ticker.css("left", xPos);
-            timelineEl.append(ticker);
+            timebarEl.append(ticker);
 
         });
         var subtitles = subtitleList.get();
@@ -98,7 +98,6 @@ directives.directive('syncPanel', function(subtitleList){
             }
 
         }
-        //subtitleBubbleListEl.children().remove();
         _.each(subtitlesInView, function(subtitle,i){
             var subtitleBubble = $("<div>");
             subtitleBubble.text(subtitle.text);
@@ -107,7 +106,7 @@ directives.directive('syncPanel', function(subtitleList){
             subtitleBubble.css('left', left);
             subtitleBubble.css('width', width);
             subtitleBubble.addClass('subtitleBubble');
-            subtitleBubbleListEl.append(subtitleBubble);
+            timelineEl.append(subtitleBubble);
         })
     }
 
@@ -121,24 +120,25 @@ directives.directive('syncPanel', function(subtitleList){
             return;
         }
         var timeDelta = pixelsToTime(-xDelta);
-        var newTime = currentTime + timeDelta;
-        newTime = Math.max(0, newTime );
-        if (newTime != currentTime){
-            currentTime = newTime;
-            redrawTimeline(timelineEl, currentTime );
+        var previousTime = currentPlayerTime.get();
+        var newTime = previousTime + timeDelta;
+        if (newTime != previousTime){
+            currentPlayerTime.set(newTime);
             previousMouseX = currentMouseX;
-
         }
+    }
+    function onPlayerTimeChanged(event, newTime){
+        redrawTimeline(timebarEl, newTime );
     }
 
     return {
         link: function(scope, elm, attrs){
             var dragTimeout = undefined;
-            timelineEl= $("ul");
+            timebarEl= $("ul.timebar");
 
-            subtitleBubbleListEl = $("div.subtitleBubbleList", elm);
-            timelineEl.css("width", viewWidth + "px");
-            redrawTimeline(timelineEl, currentTime);
+            timelineEl = $("div.timeline", elm);
+            timebarEl.css("width", viewWidth + "px");
+            redrawTimeline(timebarEl, currentPlayerTime.get());
             function onStartTimelineDrag (e){
                 currentMouseX = previousMouseX = e.pageX;
                 dragTimeout = setInterval(onDragging, 40);
@@ -150,9 +150,12 @@ directives.directive('syncPanel', function(subtitleList){
             }
 
             // atach drag and drop
-            timelineEl.mousedown( onStartTimelineDrag);
+            timebarEl.mousedown( onStartTimelineDrag);
             $(document).mouseup( onStopDragging);
-
+            scope.$on("subtitleChanged", function(){
+                redrawTimeline(timebarEl, currentPlayerTime.get(), subtitleList.get());
+            })
+            scope.$root.$on("playerTimeChanged", onPlayerTimeChanged)
         }
     }
 });

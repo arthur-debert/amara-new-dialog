@@ -111,18 +111,22 @@ ul.subtitleList{
     position: relative;
     overflow: auto;
     height: 500px;
-    width: 300px;
+}
+.subtitlesVertical .subtitleList{
+    width: 50%;
+    float: right;
 }
 
-ul.timeline{
+ul.timebar{
    list-style: none;
     cursor: pointer;
     background: gray ;
-    height:30px;
+    height:15px;
     padding: 10px;
+    font-size: 10px;
 }
 
-ul.timeline li{
+ul.timebar li{
     position: relative;
     float: left;
     -webkit-touch-callout: none;
@@ -132,17 +136,22 @@ ul.timeline li{
     -ms-user-select: none;
     user-select: none;
 }
-div.subtitleBubbleList {
+div.timeline {
     position: relative;
     cursor: pointer;
     background: gray ;
-    height:30px;
-    padding: 10px;
+    margin-top: 3px;
 }
-div.subtitleBubbleList div.subtitleBubble{
+div.timeline div.subtitleBubble{
     float:left;
     background-color: gray;
     color: white;
     border: 1px solid black;
+    position: absolute;
+    height:14px;
+    padding:4px;
+    font-size: 11px;
+    overflow-y: hidden;
+    line-height: 16px;
 }
 

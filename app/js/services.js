@@ -5,8 +5,10 @@ function randIntRange(min, max){
     return Math.floor(min + (Math.random() * max ));
 }
 
-var subtitleDataServices = angular.module('myApp.subtitleDataServices', []);
-subtitleDataServices.factory('subtitleList', function () {
+var subtitleDataServices = angular.module('myApp.subtitleDataServices', [], function($provide){
+
+
+$provide.factory('subtitleList', function () {
     var resetData = {};
     var subtitles = [];
     var currentTime = 0;
@@ -55,4 +57,22 @@ subtitleDataServices.factory('subtitleList', function () {
                 throw Error("No such step");
             }
         }
+});
+
+$provide.factory('currentPlayerTime', ['$rootScope', function($scope){
+   var currentTime = 0;
+    return {
+        get: function(){
+            return currentTime;
+        },
+        set: function(newTime){
+            // FIXME: cap to min max
+            newTime = Math.max(0, newTime);
+            if (newTime != currentTime){
+                currentTime = newTime;
+                $scope.$emit("playerTimeChanged", newTime)
+            }
+        }
+    }
+}])
 });

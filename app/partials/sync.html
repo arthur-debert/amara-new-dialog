@@ -1,6 +1,22 @@
 <div  sync-panel>
-<ul class="timeline" >
+<ul class="timebar" >
 </ul>
-<div class='subtitleBubbleList'></div>
-        </div>
+<div class='timeline'></div>
+</div>
+<div class='timelineTools'>
 
+</div>
+
+
+<div class='subtitlesVertical'>
+    <form class="quickAddSubtitle" ng-submit='addSubtitle(newSubtitleText)'>
+        <input ng-model="newSubtitleText" required/>
+    </form>
+    <ul class="subtitleList">
+        <li ng-repeat='subtitle in subtitles' amara-editable-subtitle>
+            <span>{{subtitle.start_time}} -- {{subtitle.end_time}}</span><br>
+            <p contenteditable="true" ng-model="subtitle.text" ng-bind='subtitle.text'>{{subtitle.text}}</p>
+            <a href="#" ng-click="removeSubtitle(subtitle)">X</a>
+        </li>
+    </ul>
+</div>

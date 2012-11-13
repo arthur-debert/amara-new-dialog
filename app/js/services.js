@@ -70,7 +70,7 @@ $provide.factory('currentPlayerTime', ['$rootScope', function($scope){
             newTime = Math.max(0, newTime);
             if (newTime != currentTime){
                 currentTime = newTime;
-                $scope.$emit("playerTimeChanged", newTime)
+                $scope.$broadcast("playerTimeChanged", newTime)
             }
         }
     }

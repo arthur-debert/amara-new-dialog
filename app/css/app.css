@@ -145,12 +145,12 @@ div.timeline {
     background: gray ;
     margin-top: 3px;
 }
-div.timeline div.subtitleBubble{
+div.timeline  div.subtitleBubble{
     float:left;
     background-color: gray;
     color: white;
     border: 1px solid black;
-    position: absolute;
+    position: relative;
     height:14px;
     padding:4px;
     font-size: 11px;

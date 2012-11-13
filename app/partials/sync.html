@@ -1,22 +1,25 @@
 <div  sync-panel>
-<ul class="timebar" >
-</ul>
-<div class='timeline'></div>
-</div>
-<div class='timelineTools'>
-
-</div>
-
-
-<div class='subtitlesVertical'>
-    <form class="quickAddSubtitle" ng-submit='addSubtitle(newSubtitleText)'>
-        <input ng-model="newSubtitleText" required/>
-    </form>
-    <ul class="subtitleList">
-        <li ng-repeat='subtitle in subtitles' amara-editable-subtitle>
-            <span>{{subtitle.start_time}} -- {{subtitle.end_time}}</span><br>
-            <p contenteditable="true" ng-model="subtitle.text" ng-bind='subtitle.text'>{{subtitle.text}}</p>
-            <a href="#" ng-click="removeSubtitle(subtitle)">X</a>
-        </li>
+    <h4>this time tomorrow{{magic}}</h4>
+    <ul class="timebar" >
     </ul>
+    <div class='timeline' ng-controller='TimeLine'>
+        <div ng-repeat='subtitle in subtitlesInView' data-subtitle-bubble></div>
+    </div>
+    <div class='timelineTools'>
+
+    </div>
+
+
+    <div class='subtitlesVertical'>
+        <form class="quickAddSubtitle" ng-submit='addSubtitle(newSubtitleText)'>
+            <input ng-model="newSubtitleText" required/>
+        </form>
+        <ul class="subtitleList" ng-controller='SubtitleList'>
+            <li ng-repeat='subtitle in subtitles' amara-editable-subtitle>
+                <span>{{subtitle.start_time}} -- {{subtitle.end_time}}</span><br>
+                <p contenteditable="true" ng-model="subtitle.text" ng-bind='subtitle.text'>{{subtitle.text}}</p>
+                <a href="#" ng-click="removeSubtitle(subtitle)">X</a>
+            </li>
+        </ul>
+    </div>
 </div>

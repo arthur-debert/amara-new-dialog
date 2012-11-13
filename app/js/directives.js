@@ -1,7 +1,38 @@
 'use strict';
 
 /* Directives */
+var viewWidth = 600;
+var zoomLevel = 1;
+// normalized to zoom level 1
+var millisecondsPerView = 6000;
+var pixelsPerMillisecond = (viewWidth / millisecondsPerView) * zoomLevel;
+var currentMouseX, previousMouseX = undefined;
 
+
+var markerEveryMilliseconds = 500;
+
+function timeToPixels(time){
+    return time * pixelsPerMillisecond;
+}
+function pixelsToTime(pixels){
+    return parseInt(pixels / pixelsPerMillisecond)
+}
+function nextMarkerTime(currentTime, markerEveryMilliseconds){
+    return Math.ceil(currentTime / markerEveryMilliseconds) * markerEveryMilliseconds;
+}
+
+function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView){
+    var times = [];
+    var currentTime = startTime;
+    while(currentTime < startTime + millisecondsPerView){
+        var nextMarkerT = nextMarkerTime(currentTime, markerEveryMilliseconds);
+        if (nextMarkerT < startTime + millisecondsPerView){
+            times.push(nextMarkerT);
+        }
+        currentTime += markerEveryMilliseconds;
+    }
+    return times;
+}
 
 var directives = angular.module('myApp.directives', []);
 directives.directive('amaraEditableSubtitle', function(currentPlayerTime) {
@@ -37,52 +68,13 @@ directives.directive('syncPanel', function(subtitleList, currentPlayerTime){
      */
     var timebarEl = undefined;
     var timelineEl = undefined;
-    var viewWidth = 600;
-    var zoomLevel = 1;
-    // normalized to zoom level 1
-    var millisecondsPerView = 6000;
-    var pixelsPerMillisecond = (viewWidth / millisecondsPerView) * zoomLevel;
-    var currentMouseX, previousMouseX = undefined;
 
 
-    var markerEveryMilliseconds = 500;
-
-    function timeToPixels(time){
-        return time * pixelsPerMillisecond;
-    }
-    function pixelsToTime(pixels){
-        return parseInt(pixels / pixelsPerMillisecond)
-    }
-    function nextMarkerTime(currentTime, markerEveryMilliseconds){
-        return Math.ceil(currentTime / markerEveryMilliseconds) * markerEveryMilliseconds;
-    }
-
-    function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView){
-        var times = [];
-        var currentTime = startTime;
-        while(currentTime < startTime + millisecondsPerView){
-            var nextMarkerT = nextMarkerTime(currentTime, markerEveryMilliseconds);
-            if (nextMarkerT < startTime + millisecondsPerView){
-                times.push(nextMarkerT);
-            }
-            currentTime += markerEveryMilliseconds;
-        }
-        return times;
-    }
-    function onSubtitleBubbleMouseMove(element, subtitle, event){
-        var cursorType = 'move';
-        var x = event.pageX - $(element).offset().left;
-        var RESIZE_HIT_AREA = 10;
-        if (x <= RESIZE_HIT_AREA || x >= $(element).width() - RESIZE_HIT_AREA){
-            cursorType = 'col-resize';
-        }
-        $(element).css('cursor', cursorType);
-    }
     function redrawTimeline(timebarEl, currentTime, subtitles){
 
         $(timebarEl).children().remove();
-        $(timelineEl).children().remove();
         var xOffset = timeToPixels(currentTime);
+        console.log('on dragging', xOffset, currentTime);
         var markerTimes = getMarkerTimes(currentTime, markerEveryMilliseconds, millisecondsPerView);
         _.each(markerTimes, function(markerTime, i){
             var ticker = $("<li>");
@@ -98,32 +90,7 @@ directives.directive('syncPanel', function(subtitleList, currentPlayerTime){
             timebarEl.append(ticker);
 
         });
-        var subtitles = subtitleList.get();
-        var subtitlesInView = [];
-        var endTime = currentTime + millisecondsPerView;
-        for (var i = 0; i < subtitles.length; i ++){
-            var subtitle = subtitles[i];
-            if (subtitle.start_time > endTime ){
-                break;
-            }
-            if (subtitle.start_time > currentTime || (subtitle.end_time  > currentTime && subtitle.end_time < endTime )){
-                subtitlesInView.push(subtitle);
-            }
 
-        }
-        _.each(subtitlesInView, function(subtitle,i){
-            var subtitleBubble = $("<div>");
-            subtitleBubble.text(subtitle.text);
-            var left = timeToPixels(subtitle.start_time) - xOffset;
-            var width = timeToPixels(subtitle.end_time - subtitle.start_time);
-            subtitleBubble.css('left', left);
-            subtitleBubble.css('width', width);
-            subtitleBubble.addClass('subtitleBubble');
-            subtitleBubble.mousemove( function(event){
-                onSubtitleBubbleMouseMove(subtitleBubble, subtitle, event);
-            });
-            timelineEl.append(subtitleBubble);
-        })
     }
 
     function registerMouse(e){
@@ -143,8 +110,20 @@ directives.directive('syncPanel', function(subtitleList, currentPlayerTime){
             previousMouseX = currentMouseX;
         }
     }
-    function onPlayerTimeChanged(event, newTime){
-        redrawTimeline(timebarEl, newTime );
+
+    function getSubtitlesInView(allSubtitles, currentTime){
+        var subtitlesInView = [];
+        var endTime = currentTime + millisecondsPerView;
+        for (var i = 0; i < allSubtitles.length; i ++){
+            var subtitle = allSubtitles[i];
+            if (subtitle.start_time > endTime ){
+                break;
+            }
+            if (subtitle.start_time > currentTime || (subtitle.end_time  > currentTime && subtitle.end_time < endTime )){
+                subtitlesInView.push(subtitle);
+            }
+        }
+        return subtitlesInView;
     }
 
     return {
@@ -171,7 +150,46 @@ directives.directive('syncPanel', function(subtitleList, currentPlayerTime){
             scope.$on("subtitleChanged", function(){
                 redrawTimeline(timebarEl, currentPlayerTime.get(), subtitleList.get());
             })
-            scope.$root.$on("playerTimeChanged", onPlayerTimeChanged)
+            scope.subtitlesInView = getSubtitlesInView(subtitleList.get(), currentPlayerTime.get());
+            scope.$on("playerTimeChanged", function(event, newTime) {
+                redrawTimeline(timebarEl, newTime );
+                    scope.$$childHead.onTimeChanged (getSubtitlesInView(subtitleList.get(), newTime))
+
+            });
         }
     }
 });
+directives.directive('subtitleBubble', function(subtitleList, currentPlayerTime){
+
+
+    function onSubtitleBubbleMouseMove(element, subtitle, event){
+        var cursorType = 'move';
+        var x = event.pageX - $(element).offset().left;
+        var RESIZE_HIT_AREA = 10;
+        if (x <= RESIZE_HIT_AREA || x >= $(element).width() - RESIZE_HIT_AREA){
+            cursorType = 'col-resize';
+        }
+        $(element).css('cursor', cursorType);
+    }
+
+
+    return {
+        link: function(scope, elm, attrs){
+           var xOffset = timeToPixels(currentPlayerTime.get());
+            console.log("creating bubble", xOffset, currentPlayerTime.get());
+
+
+                var subtitle = scope.subtitle;
+        elm.text(subtitle.text);
+        var left = timeToPixels(subtitle.start_time) - xOffset;
+        var width = timeToPixels(subtitle.end_time - subtitle.start_time);
+        elm.css('left', left);
+        elm.css('width', width);
+        elm.addClass('subtitleBubble');
+        elm.mousemove( function(event){
+            onSubtitleBubbleMouseMove(elm, subtitle, event);
+        });
+       }
+    };
+});
+

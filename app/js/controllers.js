@@ -16,6 +16,27 @@ function SubtitleList($scope, subtitleList) {
     $scope.resetSubtitling = function(){
         $scope.subtitles = subtitleList.resetStep('beforeSubtitling');
     }
+    $scope.onSubtitlesInViewChanged = function(newSubtitles){
+        $scope.subtitlesInView = newSubtitles ;
+        console.log("subs updated")
+    }
+
 }
 //SubtitleList.$inject(["$scope", "subtitleList"])
+
+function TimeLine($scope, subtitleList, currentPlayerTime){
+    this.$scope = $scope;
+
+    $scope.magic = "hey"
+    $scope.onTimeChanged = function(subs, newTime){
+        $scope.$apply(function(){
+            $scope.subtitlesInView= $scope.$parent.subtitlesInView = subs.slice();
+
+        })
+
+
+    }
+
+}
+//TimeLine.$inject(["$scope", "subtitleList", "currentPlayerTime"])
 

@@ -13301,7 +13301,6 @@ var ngRepeatDirective = ngDirective({
             });
           }
         }
-
         //shrink children
         for (key in lastOrder) {
           if (lastOrder.hasOwnProperty(key)) {

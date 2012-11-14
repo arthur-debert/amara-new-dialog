@@ -162,6 +162,13 @@ directives.directive('syncPanel', function (subtitleList, currentPlayerTime) {
 });
 directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime) {
 
+    var MIN_SUBTITLE_DURATION = 500;
+    var draggingMode = null;
+    var resizingStartTime = false;
+    var startDraggingX = null;
+    var minNewTime = null;
+    var maxNewTime = null;
+    var draggingInterval = null;
     function getSubtitlePos(subtitle, currentTime){
         return {
             left: timeToPixels(subtitle.start_time) - timeToPixels(currentTime),
@@ -171,8 +178,55 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     }
     function repositionSubtitle(elm, subtitle, currentTime) {
         elm.css(getSubtitlePos(subtitle, currentTime));
+
+        // these are the dragging bounds
     }
 
+    function onResizing(event, element, subtitle){
+        var targetX = event.pageX;
+        console.log(targetX, timeToPixels(minNewTime), timeToPixels(maxNewTime));
+        targetX = Math.max(timeToPixels(minNewTime), targetX);
+        targetX = Math.min(timeToPixels(maxNewTime), targetX);
+            if (resizingStartTime){
+                // if start time, move initial, keep final pos intact
+                var finalPos = element.css("left") + element.css("width");
+                element.css('left', targetX);
+                element.css('width', finalPos - targetX);
+                subtitle.start_time = timeToPixels(targetX) ;
+            }else{
+                // end time, let left alone, increase width
+                var newWidth = targetX - element.css('left');
+                element.css('width', newWidth);
+                subtitle.end_time = timeToPixels(newWidth)
+            }
+    }
+
+    function onStartDrag(event, element, subtitle){
+        startDraggingX = event.pageX;
+       if(element.css('cursor')=='move') {
+           draggingMode = 'moving';
+       }else{
+           draggingMode = 'resizing';
+           var x = event.pageX - $(element).offset().left;
+           var RESIZE_HIT_AREA = 10;
+           resizingStartTime = false;
+           var previousSubtitle = subtitleList.getPrevious(subtitle);
+           var nextSubtitle = subtitleList.getNext(subtitle);
+           console.log(previousSubtitle, nextSubtitle);
+           if (x <= RESIZE_HIT_AREA ){
+                resizingStartTime = true;
+               minNewTime = previousSubtitle? previousSubtitle.end_time: 0;
+               maxNewTime = subtitle.end_time - MIN_SUBTITLE_DURATION;
+            }else{
+               maxNewTime = nextSubtitle ? nextSubtitle.start_time: 30000;
+               minNewTime = subtitle.start_time + MIN_SUBTITLE_DURATION;
+           }
+           console.log(draggingMode, resizingStartTime, minNewTime, maxNewTime);
+           element.mousemove (function(event) {
+               onResizing(event, element, subtitle);
+           });
+       }
+    }
     function onSubtitleBubbleMouseMove(element, subtitle, event) {
         var cursorType = 'move';
         var x = event.pageX - $(element).offset().left;
@@ -195,8 +249,11 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
             });
             scope.$on('playerTimeChanged', function(event, newTime){
                 repositionSubtitle(elm, scope.subtitle, newTime);
-            })
+            });
             repositionSubtitle(elm, scope.subtitle, currentPlayerTime.get());
+            elm.mousedown(function(event){
+                onStartDrag(event, elm, subtitle);
+            })
         }
     };
 });

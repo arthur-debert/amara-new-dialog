@@ -27,7 +27,7 @@ $provide.factory('subtitleList', function () {
         if (randomizeTimes){
             currentTime += duration + randIntRange(200, 3000);
         }else{
-            currentTime = (i+1) * 1000;
+            currentTime = (i+1) * 2000;
         }
     }
     resetData['beforeSubtitling'] = subtitles.slice(0);
@@ -44,6 +44,20 @@ $provide.factory('subtitleList', function () {
                         subtitles.splice(i,1);
                     }
                 }
+            },
+            getPrevious: function(subtitle){
+                var index = _.indexOf(subtitles, subtitle);
+                if (index ==0) {
+                    return undefined;
+                }
+                return subtitles[index -1];
+            },
+            getNext: function(subtitle){
+                var index = _.indexOf(subtitles, subtitle);
+                if (index == subtitles.length) {
+                    return undefined;
+                }
+                return subtitles[index +1];
             },
             addSubtitle: function(subtitle, afterSubtitle){
                 var index = subtitles.length;

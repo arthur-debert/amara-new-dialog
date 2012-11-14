@@ -105,6 +105,8 @@ body{
 
 form.quickAddSubtitle{
     height: 40px;
+    float:left;
+    clear:both;
 }
 
 ul.subtitleList{
@@ -144,17 +146,19 @@ div.timeline {
     cursor: pointer;
     background: gray ;
     margin-top: 3px;
+    height: 23px;
 }
 div.timeline  div.subtitleBubble{
     float:left;
     background-color: gray;
     color: white;
     border: 1px solid black;
-    position: relative;
+    position: absolute;
     height:14px;
-    padding:4px;
+    padding: 4px 0px 4px 0px;
     font-size: 11px;
     overflow-y: hidden;
     line-height: 16px;
+    margin: 0px;
 }
 

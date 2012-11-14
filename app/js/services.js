@@ -9,18 +9,26 @@ var subtitleDataServices = angular.module('myApp.subtitleDataServices', [], func
 
 
 $provide.factory('subtitleList', function () {
+    var randomizeTimes = false;
     var resetData = {};
     var subtitles = [];
     var currentTime = 0;
     var bacon = "Bacon ipsum dolor sit amet meatloaf kielbasa turducken tail, cow leberkas prosciutto shoulder chuck pork chop turkey swine sausage. Swine beef bacon sausage bresaola. Tri-tip pastrami meatball meatloaf sausage brisket pork chop, ham drumstick shank venison shankle. Pancetta fatback drumstick, leberkas spare ribs chuck pastrami tail biltong prosciutto bacon. Sirloin jerky tongue turkey kielbasa. Strip steak andouille short loin, tail fatback ham hock leberkas pancetta boudin tri-tip tongue. Hamburger t-bone brisket kielbasa."
     for (var i = 0; i < 100; i++) {
-        var duration = randIntRange(300, 3000);
+        var duration = 1000;
+        if (randomizeTimes){
+            var duration = randIntRange(300, 3000);
+        }
         subtitles.push({
             text: i + ") " + bacon.substr(0, randIntRange(8, 72)),
             start_time: currentTime,
             end_time: currentTime + duration,
         });
-        currentTime += duration + randIntRange(200, 3000);
+        if (randomizeTimes){
+            currentTime += duration + randIntRange(200, 3000);
+        }else{
+            currentTime = (i+1) * 1000;
+        }
     }
     resetData['beforeSubtitling'] = subtitles.slice(0);
         return {

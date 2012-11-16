@@ -40,7 +40,6 @@ function TimeLine($scope, subtitleList, currentPlayerTime){
 }
 //TimeLine.$inject(["$scope", "subtitleList", "currentPlayerTime"])
 function SubtitleBubble($scope, subtitleList){
-    console.log("initing bubble");
 }
 //TimeLine.$inject(["$scope", "subtitleList"])
 

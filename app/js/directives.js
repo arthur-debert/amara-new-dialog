@@ -183,9 +183,19 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
         elm.css(getSubtitlePos(subtitle, currentTime));
     }
 
+    function onMoving(event, element, subtitle, minDragPos, maxDragPos){
+        var targetX = event.pageX - startDraggingX;
+
+        if (targetX > minDragPos && targetX + cssPropToPixels(element.css("width"))< maxDragPos){
+            var duration = subtitle.end_time - subtitle.start_time;
+            element.css('left', targetX);
+           subtitle.start_time = pixelsToTime(targetX);
+            subtitle.end_time = subtitle.start_time + duration;
+
+        }
+    }
     function onResizing(event, element, subtitle, previousSubtitle, nextSubtitle, minNewTime, maxNewTime){
         var targetX = event.pageX;
-        console.log(targetX, timeToPixels(minNewTime), timeToPixels(maxNewTime));
         targetX = Math.max(timeToPixels(minNewTime), targetX);
         targetX = Math.min(timeToPixels(maxNewTime), targetX);
         var left = cssPropToPixels(element.css("left"));
@@ -213,16 +223,25 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     }
 
     function onStartDrag(event, element, subtitle, scope){
-        startDraggingX = event.pageX;
+
+        var previousSubtitle = subtitleList.getPrevious(subtitle);
+        var nextSubtitle = subtitleList.getNext(subtitle);
        if(element.css('cursor')=='move') {
            draggingMode = 'moving';
+           startDraggingX =  event.pageX - element.offset().left;
+           var minDragPos = previousSubtitle ?
+               timeToPixels(previousSubtitle.end_time) : 0;
+           var maxDragPos = nextSubtitle? timeToPixels(nextSubtitle.start_time) : 500000;
+           $(document).mousemove (function(event) {
+               onMoving(event, element, subtitle, minDragPos, maxDragPos);
+               scope.$root.$broadcast("subtitleChanged")
+           });
        }else{
+           startDraggingX = event.pageX;
            draggingMode = 'resizing';
            var x = event.pageX - $(element).offset().left;
            var RESIZE_HIT_AREA = 10;
            resizingStartTime = false;
-           var previousSubtitle = subtitleList.getPrevious(subtitle);
-           var nextSubtitle = subtitleList.getNext(subtitle);
            if (x <= RESIZE_HIT_AREA ){
                 resizingStartTime = true;
                minNewTime = previousSubtitle? previousSubtitle.start_time + MIN_SUBTITLE_DURATION: 0;

@@ -157,8 +157,15 @@ div.timeline  div.subtitleBubble{
     height:14px;
     padding: 4px 0px 4px 0px;
     font-size: 11px;
-    overflow-y: hidden;
+    white-space: nowrap;
+    overflow: hidden;
     line-height: 16px;
     margin: 0px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 

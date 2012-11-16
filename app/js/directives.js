@@ -15,7 +15,7 @@ function cssPropToPixels(val){
     return parseInt(val.substring(0, val.indexOf('p')));
 }
 function timeToPixels(time) {
-    return time * pixelsPerMillisecond;
+    return (time * pixelsPerMillisecond) ;
 }
 function pixelsToTime(pixels) {
     return parseInt(pixels / pixelsPerMillisecond)
@@ -188,7 +188,6 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
 
         if (targetX > minDragPos && targetX + cssPropToPixels(element.css("width"))< maxDragPos){
             var duration = subtitle.end_time - subtitle.start_time;
-            element.css('left', targetX);
            subtitle.start_time = pixelsToTime(targetX);
             subtitle.end_time = subtitle.start_time + duration;
 
@@ -204,8 +203,6 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
                 // if start time, move initial, keep final pos intact
                 subtitle.start_time = pixelsToTime(targetX) ;
                 var duration = subtitle.end_time - subtitle.start_time;
-                element.css('left', targetX );
-                element.css('width', timeToPixels(duration));
                 if (previousSubtitle && subtitle.start_time <= previousSubtitle.end_time &&
                     subtitle.start_time > minNewTime){
                     previousSubtitle.end_time = subtitle.start_time;
@@ -213,7 +210,6 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
             }else{
                 // end time, let left alone, increase width
                 var newWidth = targetX - left;
-                element.css('width', newWidth);
                 subtitle.end_time = pixelsToTime( left + newWidth)
                 if (nextSubtitle && subtitle.end_time >= nextSubtitle.start_time &&
                     subtitle.end_time < maxNewTime){

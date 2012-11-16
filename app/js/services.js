@@ -22,7 +22,7 @@ $provide.factory('subtitleList', function () {
         subtitles.push({
             text: i + ") " + bacon.substr(0, randIntRange(8, 72)),
             start_time: currentTime,
-            end_time: currentTime + duration,
+            end_time: currentTime + duration
         });
         if (randomizeTimes){
             currentTime += duration + randIntRange(200, 3000);

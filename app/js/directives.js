@@ -181,32 +181,38 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     }
     function repositionSubtitle(elm, subtitle, currentTime) {
         elm.css(getSubtitlePos(subtitle, currentTime));
-
-        // these are the dragging bounds
     }
 
-    function onResizing(event, element, subtitle){
+    function onResizing(event, element, subtitle, previousSubtitle, nextSubtitle, minNewTime, maxNewTime){
         var targetX = event.pageX;
         console.log(targetX, timeToPixels(minNewTime), timeToPixels(maxNewTime));
         targetX = Math.max(timeToPixels(minNewTime), targetX);
         targetX = Math.min(timeToPixels(maxNewTime), targetX);
         var left = cssPropToPixels(element.css("left"));
-        var width = cssPropToPixels(element.css("left"));
+        var width = cssPropToPixels(element.css("width"));
             if (resizingStartTime){
                 // if start time, move initial, keep final pos intact
-                var finalPos =  left + width;
+                subtitle.start_time = pixelsToTime(targetX) ;
+                var duration = subtitle.end_time - subtitle.start_time;
                 element.css('left', targetX );
-                element.css('width', finalPos - targetX);
-                subtitle.start_time = timeToPixels(targetX) ;
+                element.css('width', timeToPixels(duration));
+                if (previousSubtitle && subtitle.start_time <= previousSubtitle.end_time &&
+                    subtitle.start_time > minNewTime){
+                    previousSubtitle.end_time = subtitle.start_time;
+                }
             }else{
                 // end time, let left alone, increase width
                 var newWidth = targetX - left;
                 element.css('width', newWidth);
-                subtitle.end_time = timeToPixels(newWidth)
+                subtitle.end_time = pixelsToTime( left + newWidth)
+                if (nextSubtitle && subtitle.end_time >= nextSubtitle.start_time &&
+                    subtitle.end_time < maxNewTime){
+                    nextSubtitle.start_time = subtitle.end_time;
+                }
             }
     }
 
-    function onStartDrag(event, element, subtitle){
+    function onStartDrag(event, element, subtitle, scope){
         startDraggingX = event.pageX;
        if(element.css('cursor')=='move') {
            draggingMode = 'moving';
@@ -217,18 +223,17 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
            resizingStartTime = false;
            var previousSubtitle = subtitleList.getPrevious(subtitle);
            var nextSubtitle = subtitleList.getNext(subtitle);
-           console.log(previousSubtitle, nextSubtitle);
            if (x <= RESIZE_HIT_AREA ){
                 resizingStartTime = true;
-               minNewTime = previousSubtitle? previousSubtitle.end_time: 0;
+               minNewTime = previousSubtitle? previousSubtitle.start_time + MIN_SUBTITLE_DURATION: 0;
                maxNewTime = subtitle.end_time - MIN_SUBTITLE_DURATION;
             }else{
-               maxNewTime = nextSubtitle ? nextSubtitle.start_time: 30000;
+               maxNewTime = nextSubtitle ? nextSubtitle.end_time - MIN_SUBTITLE_DURATION: 30000;
                minNewTime = subtitle.start_time + MIN_SUBTITLE_DURATION;
            }
-           console.log(draggingMode, resizingStartTime, minNewTime, maxNewTime);
-           element.mousemove (function(event) {
-               onResizing(event, element, subtitle);
+           $(document).mousemove (function(event) {
+               onResizing(event, element, subtitle, previousSubtitle, nextSubtitle , minNewTime, maxNewTime );
+               scope.$root.$broadcast("subtitleChanged")
            });
        }
     }
@@ -255,9 +260,15 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
             scope.$on('playerTimeChanged', function(event, newTime){
                 repositionSubtitle(elm, scope.subtitle, newTime);
             });
+            scope.$on("subtitleChanged", function () {
+                repositionSubtitle(elm, scope.subtitle, currentPlayerTime.get());
+            })
             repositionSubtitle(elm, scope.subtitle, currentPlayerTime.get());
             elm.mousedown(function(event){
-                onStartDrag(event, elm, subtitle);
+                onStartDrag(event, elm, subtitle, scope);
+                $(document).mouseup(function(event){
+                    $(document).unbind('mousemove') ;
+                })
             })
         }
     };

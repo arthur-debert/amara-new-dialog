@@ -11,6 +11,9 @@ var currentMouseX, previousMouseX = undefined;
 
 var markerEveryMilliseconds = 500;
 
+function cssPropToPixels(val){
+    return parseInt(val.substring(0, val.indexOf('p')));
+}
 function timeToPixels(time) {
     return time * pixelsPerMillisecond;
 }
@@ -187,15 +190,17 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
         console.log(targetX, timeToPixels(minNewTime), timeToPixels(maxNewTime));
         targetX = Math.max(timeToPixels(minNewTime), targetX);
         targetX = Math.min(timeToPixels(maxNewTime), targetX);
+        var left = cssPropToPixels(element.css("left"));
+        var width = cssPropToPixels(element.css("left"));
             if (resizingStartTime){
                 // if start time, move initial, keep final pos intact
-                var finalPos = element.css("left") + element.css("width");
-                element.css('left', targetX);
+                var finalPos =  left + width;
+                element.css('left', targetX );
                 element.css('width', finalPos - targetX);
                 subtitle.start_time = timeToPixels(targetX) ;
             }else{
                 // end time, let left alone, increase width
-                var newWidth = targetX - element.css('left');
+                var newWidth = targetX - left;
                 element.css('width', newWidth);
                 subtitle.end_time = timeToPixels(newWidth)
             }

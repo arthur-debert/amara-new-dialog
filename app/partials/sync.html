@@ -11,7 +11,7 @@
 
     <div class='subtitlesVertical'>
         <form class="quickAddSubtitle" ng-submit='addSubtitle(newSubtitleText)'>
-            <input ng-model="newSubtitleText" required/>
+            <input ng-model="newSubtitleText" required placeholder="Add subtitle"/>
         </form>
         <ul class="subtitleList" ng-controller='SubtitleList'>
             <li ng-repeat='subtitle in subtitles' amara-editable-subtitle>

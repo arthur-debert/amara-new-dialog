@@ -118,6 +118,13 @@ form.quickAddSubc='hidden' title{
     float:left;
     clear:both;
 }
+form.quickAddSubtitle input{
+    font-size: 14px;
+    width: 630px;
+    padding: 0;
+    margin: 4px;
+    line-height: 20px;
+}
 
 ul.subtitleList{
     position: relative;

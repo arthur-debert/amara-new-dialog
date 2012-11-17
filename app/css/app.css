@@ -50,6 +50,8 @@ table {
 
 body{
     font-family: helvetica,sans;
+    font-size: 14px;
+    color: #666;
 }
 .header {
     padding:10px;
@@ -67,13 +69,21 @@ body{
     padding-left:10px;
     float: left;
 }
+.videoPlayerCallToAction{
+    width: 150px;
+    float: left;
+    height: 270px;
+}
 .videoPlayerContainer{
     border: 1px solid black;
     width: 480px;
-    height: 380px;
-    margin: 0px auto 0px auto;
+    height: 270px;
+    float:left;
 }
 
+.hidden{
+    display:none;
+}
 .menu {
   list-style: none;
   border-bottom: 0.1em solid black;
@@ -103,7 +113,7 @@ body{
   padding: 0;
 }
 
-form.quickAddSubtitle{
+form.quickAddSubc='hidden' title{
     height: 40px;
     float:left;
     clear:both;
@@ -114,11 +124,21 @@ ul.subtitleList{
     overflow: auto;
     height: 500px;
 }
+ul.subtitleList li{
+    background-color: #fafafa;
+    border-bottom:1px solid #dadada;
+    padding: 10px;
+}
+.subtitleTime.small{
+    float: right;
+    font-size: 10px;
+    color: #999;
+}
 ul.subtitleList li.active{
     background-color: #87ceeb;
 }
 .subtitlesVertical .subtitleList{
-    width: 50%;
+    width: 100%;
     float: right;
 }
 
@@ -129,6 +149,8 @@ ul.timebar{
     height:15px;
     padding: 10px;
     font-size: 10px;
+    clear: both;
+    margin-top:8px;
 }
 
 ul.timebar li{

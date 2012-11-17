@@ -1,7 +1,7 @@
 'use strict';
 
 /* Directives */
-var viewWidth = 600;
+var viewWidth = 620;
 var zoomLevel = 1;
 // normalized to zoom level 1
 var millisecondsPerView = 6000;
@@ -136,6 +136,7 @@ directives.directive('syncPanel', function (subtitleList, currentPlayerTime) {
 
             timelineEl = $("div.timeline", elm);
             timebarEl.css("width", viewWidth + "px");
+            timelineEl.css("width", viewWidth + "px");
             redrawTimeline(timebarEl, currentPlayerTime.get());
             function onStartTimelineDrag(e) {
                 currentMouseX = previousMouseX = e.pageX;

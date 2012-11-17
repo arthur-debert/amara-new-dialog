@@ -1,5 +1,4 @@
 <div  sync-panel>
-    <h4>this time tomorrow{{magic}}</h4>
     <ul class="timebar" >
     </ul>
     <div class='timeline' ng-controller='TimeLine'>
@@ -16,9 +15,9 @@
         </form>
         <ul class="subtitleList" ng-controller='SubtitleList'>
             <li ng-repeat='subtitle in subtitles' amara-editable-subtitle>
-                <span>{{subtitle.start_time}} -- {{subtitle.end_time}}</span><br>
+                <span class="subtitleTime small">{{subtitle.start_time|showTime}}</span><br>
                 <p contenteditable="true" ng-model="subtitle.text" ng-bind='subtitle.text'>{{subtitle.text}}</p>
-                <a href="#" ng-click="removeSubtitle(subtitle)">X</a>
+                <a class='hidden' href="#" ng-click="removeSubtitle(subtitle)">X</a>
             </li>
         </ul>
     </div>

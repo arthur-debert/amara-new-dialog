@@ -172,6 +172,7 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     var minNewTime = null;
     var maxNewTime = null;
     var draggingInterval = null;
+    var playerTimeOffset  = null;
     function getSubtitlePos(subtitle, currentTime){
         return {
             left: timeToPixels(subtitle.start_time) - timeToPixels(currentTime),
@@ -184,7 +185,7 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     }
 
     function onMoving(event, element, subtitle, minDragPos, maxDragPos){
-        var targetX = event.pageX - startDraggingX;
+        var targetX = event.pageX - startDraggingX + playerTimeOffset;
 
         if (targetX > minDragPos && targetX + cssPropToPixels(element.css("width"))< maxDragPos){
             var duration = subtitle.end_time - subtitle.start_time;
@@ -194,7 +195,7 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
         }
     }
     function onResizing(event, element, subtitle, previousSubtitle, nextSubtitle, minNewTime, maxNewTime){
-        var targetX = event.pageX;
+        var targetX = event.pageX + playerTimeOffset ;
         targetX = Math.max(timeToPixels(minNewTime), targetX);
         targetX = Math.min(timeToPixels(maxNewTime), targetX);
         var left = cssPropToPixels(element.css("left"));
@@ -210,7 +211,7 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
             }else{
                 // end time, let left alone, increase width
                 var newWidth = targetX - left;
-                subtitle.end_time = pixelsToTime( left + newWidth)
+                subtitle.end_time = pixelsToTime( left + newWidth );
                 if (nextSubtitle && subtitle.end_time >= nextSubtitle.start_time &&
                     subtitle.end_time < maxNewTime){
                     nextSubtitle.start_time = subtitle.end_time;
@@ -220,6 +221,7 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
 
     function onStartDrag(event, element, subtitle, scope){
 
+        playerTimeOffset = timeToPixels(currentPlayerTime.get());
         var previousSubtitle = subtitleList.getPrevious(subtitle);
         var nextSubtitle = subtitleList.getNext(subtitle);
        if(element.css('cursor')=='move') {

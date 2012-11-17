@@ -151,6 +151,9 @@ ul.timebar{
     font-size: 10px;
     clear: both;
     margin-top:8px;
+    background: rgb(35,35,35) ;
+    color: rgb(210, 210, 210);
+    border-bottom: 5px solid #323232;
 }
 
 ul.timebar li{
@@ -166,18 +169,15 @@ ul.timebar li{
 div.timeline {
     position: relative;
     cursor: pointer;
-    background: gray ;
-    margin-top: 3px;
-    height: 23px;
+    background: rgb(40,40,40);
+    height: 43px;
 }
 div.timeline  div.subtitleBubble{
     float:left;
-    background-color: gray;
     color: white;
-    border: 1px solid black;
     position: absolute;
-    height:14px;
-    padding: 4px 0px 4px 0px;
+    height:27px;
+    padding: 12px 3px 1px 4px;
     font-size: 11px;
     white-space: nowrap;
     overflow: hidden;
@@ -189,5 +189,18 @@ div.timeline  div.subtitleBubble{
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+
+    background: #707070; /* Old browsers */
+    background: -moz-linear-gradient(top, #707070 0%, #3a3a3a 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#707070), color-stop(100%,#3a3a3a)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #707070 0%,#3a3a3a 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #707070 0%,#3a3a3a 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #707070 0%,#3a3a3a 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #707070 0%,#3a3a3a 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#707070', endColorstr='#3a3a3a',GradientType=0 ); /* IE6-9 */
+
+
+    border: 1px solid rgb(54,54,54);
+    border-radius: 4px;
 }
 

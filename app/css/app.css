@@ -177,6 +177,11 @@ ul.timebar li{
     -ms-user-select: none;
     user-select: none;
 }
+.timeNeedle{
+    z-index: 1000;
+    position: absolute;
+    float:none;
+}
 div.timeline {
     position: relative;
     cursor: pointer;

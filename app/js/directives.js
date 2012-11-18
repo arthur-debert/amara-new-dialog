@@ -46,7 +46,6 @@ directives.directive('subtitleList', function (subtitleList, currentPlayerTime) 
     function resizeSubtitleList(window, elm){
         var height = $(window).height() - $(elm).offset().top - 2;
         height = Math.max(40, height);
-
         $(elm).css("height", height + "px");
     }
     return {
@@ -142,11 +141,11 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
      */
     var timebarEl = undefined;
     var timelineEl = undefined;
-
+    var timeNeedle;
 
     function redrawTimeline( timebarEl, currentTime, subtitles) {
 
-        $(timebarEl).children().remove();
+        $(timebarEl).children("li").remove();
         var xOffset = timeToPixels(currentTime);
         var markerTimes = getMarkerTimes(currentTime, markerEveryMilliseconds, millisecondsPerView);
         _.each(markerTimes, function (markerTime, i) {
@@ -158,6 +157,10 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
             timebarEl.append(ticker);
 
         });
+
+        $(timeNeedle).css('left' , timeToPixels(currentTime) - xOffset);
+        console.log(currentTime);
+
 
     }
 
@@ -215,6 +218,14 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
                 clearInterval(dragTimeout);
             }
 
+            var paper = Raphael($(".timebar .timeNeedle")[0])
+            var circle = paper.circle(4, 4, 4);
+            circle.attr("stroke-width", "0");
+            circle.attr("fill", "#f00");
+            var line = paper.path("M 4,4L4,70")
+            line.attr("stroke-width", "2px")
+            line.attr("stroke", "#f00")
+            timeNeedle = $(timebarEl).children(".timeNeedle")[0];
             // atach drag and drop
             timebarEl.mousedown(onStartTimelineDrag);
             $(document).mouseup(onStopDragging);

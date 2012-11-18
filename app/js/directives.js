@@ -44,9 +44,11 @@ var directives = angular.module('myApp.directives', []);
 directives.directive('amaraEditableSubtitle', function (subtitleList, currentPlayerTime) {
     return {
         link:function (scope, elm, attrs) {
+            var textOnFocus = null;
             var el = angular.element(elm[0]);
             var editableParagrah = $(elm[0]).children("p")[0];
             editableParagrah.addEventListener('focus', function () {
+                textOnFocus = $(editableParagrah).text();
                 // this little monster is the helper that
                 // selects all text in a div.
                 window.setTimeout(function() {
@@ -64,11 +66,17 @@ directives.directive('amaraEditableSubtitle', function (subtitleList, currentPla
                     }
                 }, 1);
             });
-            editableParagrah.addEventListener('blur', function () {
+            editableParagrah.addEventListener('blur', function (event) {
+                // if text is empty, restore to the text on focus
+                // easy cop out, but just saner than alternatives
+                // (deleting, sub, etc)
+                if ($(editableParagrah).text() == ''){
+                    $(editableParagrah).text(textOnFocus);
+                    return;
+                }
                 scope.$root.$apply(function () {
                     scope.subtitle.text = $(editableParagrah).text();
                     scope.$root.subtitles = subtitleList.get();
-                    console.log(scope.$root.subtitles[_.indexOf(subtitleList.get(), scope.subtitle)])
                 });
                 scope.$emit("subtitleChanged")
             }, false);

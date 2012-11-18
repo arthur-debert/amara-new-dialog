@@ -11,15 +11,16 @@ function EditableSubtitle($scope){
 
 }
 
-function SubtitleList($scope, subtitleList) {
+function SubtitleList($scope, subtitleList, currentPlayerTime) {
     $scope.subtitles = subtitleList.get();
     $scope.removeSubtitle = function(subtitle){
         subtitleList.removeSubtitle(subtitle);
     };
     $scope.addSubtitle = function(text){
         $scope.mustScrollToBottom = true;
-        subtitleList.addSubtitle({'text':text})
+        var subtitle  = subtitleList.addSubtitle({'text':text})
         $scope.newSubtitleText = '';
+        //currentPlayerTime.set(subtitle.starTime)
     }
     $scope.resetSubtitling = function(){
         $scope.subtitles = subtitleList.resetStep('beforeSubtitling');

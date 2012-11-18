@@ -74,6 +74,7 @@ $provide.factory('subtitleList', function () {
                     subtitle.endTime = subtitle.startTime + 2000;
                 }
                 subtitles.splice(index, 0, subtitle);
+                return subtitle;
 
             },
             resetStep: function (stepName){
@@ -93,6 +94,13 @@ $provide.factory('currentPlayerTime', ['$rootScope', function($scope){
             return currentTime;
         },
         set: function(newTime){
+            try{
+                newTime = parseInt(newTime);
+            }catch(e){
+                console.log("Can't set new time to", newTime);
+                throw e;
+            }
+
             // FIXME: cap to min max
             newTime = Math.max(0, newTime);
             if (newTime != currentTime){

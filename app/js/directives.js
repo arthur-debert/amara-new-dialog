@@ -48,6 +48,8 @@ directives.directive('amaraEditableSubtitle', function (subtitleList, currentPla
             var el = angular.element(elm[0]);
             var editableParagrah = $(elm[0]).children("p")[0];
             editableParagrah.addEventListener('focus', function () {
+                $(el).addClass("active");
+                currentPlayerTime.set(scope.subtitle.startTime);
                 angular.element(el).controller().setActive(true);
                 textOnFocus = $(editableParagrah).text();
                 // this little monster is the helper that
@@ -71,6 +73,7 @@ directives.directive('amaraEditableSubtitle', function (subtitleList, currentPla
                 // if text is empty, restore to the text on focus
                 // easy cop out, but just saner than alternatives
                 // (deleting, sub, etc)
+                $(el).removeClass("active");
                 angular.element(el).controller().setActive(false);
                 var text = $(editableParagrah).text();
                 if(!String.prototype.trim) {

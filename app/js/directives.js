@@ -41,7 +41,30 @@ function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView)
 }
 
 var directives = angular.module('myApp.directives', []);
+directives.directive('subtitleList', function (subtitleList, currentPlayerTime) {
+    var hasWindowResize = false;
+    function resizeSubtitleList(window, elm){
+        var height = $(window).height() - $(elm).offset().top - 2;
+        height = Math.max(40, height);
+
+        $(elm).css("height", height + "px");
+    }
+    return {
+        link:function (scope, elm, attrs) {
+
+            var elm = elm;
+            if (! hasWindowResize){
+                $(window).resize(function(event){
+                    resizeSubtitleList(window, elm);
+                })
+            }
+            resizeSubtitleList(window, elm);
+        }
+    }
+});
+
 directives.directive('amaraEditableSubtitle', function (subtitleList, currentPlayerTime) {
+    var hasWindowResize = false;
     return {
         link:function (scope, elm, attrs) {
             var textOnFocus = null;

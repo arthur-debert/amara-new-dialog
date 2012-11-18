@@ -37,7 +37,6 @@ function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView)
             times.push(nextMarkerT);
         }
     }
-    console.log(times)
     return times;
 }
 
@@ -87,7 +86,6 @@ directives.directive('syncPanel', function (subtitleList, currentPlayerTime ) {
             ticker.text(parseInt(markerTime / 1000));
             // position
             var xPos = timeToPixels(markerTime) - xOffset;
-            console.log(markerTime, xPos, xOffset)
             ticker.css("left", xPos);
             timebarEl.append(ticker);
 

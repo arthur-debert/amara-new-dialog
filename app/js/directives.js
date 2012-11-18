@@ -65,7 +65,7 @@ directives.directive('amaraEditableSubtitle', function (currentPlayerTime) {
         }
     };
 });
-directives.directive('syncPanel', function (subtitleList, currentPlayerTime ) {
+directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerTime ) {
     /**
      * The time line is composed of two parts.
      * The strip with the time markers (which is draggeable)
@@ -76,14 +76,14 @@ directives.directive('syncPanel', function (subtitleList, currentPlayerTime ) {
     var timelineEl = undefined;
 
 
-    function redrawTimeline(timebarEl, currentTime, subtitles) {
+    function redrawTimeline( timebarEl, currentTime, subtitles) {
 
         $(timebarEl).children().remove();
         var xOffset = timeToPixels(currentTime);
         var markerTimes = getMarkerTimes(currentTime, markerEveryMilliseconds, millisecondsPerView);
         _.each(markerTimes, function (markerTime, i) {
             var ticker = $("<li>");
-            ticker.text(parseInt(markerTime / 1000));
+            ticker.text($filter("showTime")(markerTime ));
             // position
             var xPos = timeToPixels(markerTime) - xOffset;
             ticker.css("left", xPos);

@@ -4,7 +4,7 @@
 var viewWidth = 620;
 var zoomLevel = 1;
 // normalized to zoom level 1
-var millisecondsPerView = 6000;
+var millisecondsPerView = 6200;
 var pixelsPerMillisecond = (viewWidth / millisecondsPerView) * zoomLevel;
 var currentMouseX, previousMouseX = undefined;
 
@@ -26,14 +26,18 @@ function nextMarkerTime(currentTime, markerEveryMilliseconds) {
 
 function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView) {
     var times = [];
-    var currentTime = startTime;
-    while (currentTime < startTime + millisecondsPerView) {
-        var nextMarkerT = nextMarkerTime(currentTime, markerEveryMilliseconds);
-        if (nextMarkerT < startTime + millisecondsPerView) {
+    var finalTime = startTime + millisecondsPerView;
+    var startSecond = Math.ceil(startTime / 1000)
+    var endSecond = Math.ceil(finalTime / 1000);
+    var step = Math.ceil((endSecond - startSecond) / (millisecondsPerView)/ markerEveryMilliseconds);
+    var currentTime = startSecond;
+    for (var i = startSecond; i <= endSecond; i+=step){
+        var nextMarkerT = i * 1000;
+        if (nextMarkerT < finalTime) {
             times.push(nextMarkerT);
         }
-        currentTime += markerEveryMilliseconds;
     }
+    console.log(times)
     return times;
 }
 
@@ -62,7 +66,7 @@ directives.directive('amaraEditableSubtitle', function (currentPlayerTime) {
         }
     };
 });
-directives.directive('syncPanel', function (subtitleList, currentPlayerTime) {
+directives.directive('syncPanel', function (subtitleList, currentPlayerTime ) {
     /**
      * The time line is composed of two parts.
      * The strip with the time markers (which is draggeable)
@@ -80,14 +84,10 @@ directives.directive('syncPanel', function (subtitleList, currentPlayerTime) {
         var markerTimes = getMarkerTimes(currentTime, markerEveryMilliseconds, millisecondsPerView);
         _.each(markerTimes, function (markerTime, i) {
             var ticker = $("<li>");
-            if (markerTime % 1000 == 0) {
-                ticker.text(parseInt(markerTime / 1000));
-            } else {
-                ticker.text("|");
-                ticker.addClass("timelineTicker");
-            }
+            ticker.text(parseInt(markerTime / 1000));
             // position
             var xPos = timeToPixels(markerTime) - xOffset;
+            console.log(markerTime, xPos, xOffset)
             ticker.css("left", xPos);
             timebarEl.append(ticker);
 

@@ -153,8 +153,7 @@ ul.timebar{
    list-style: none;
     cursor: pointer;
     background: gray ;
-    height:15px;
-    padding: 10px;
+    height:25px;
     font-size: 10px;
     clear: both;
     margin-top:8px;
@@ -164,6 +163,10 @@ ul.timebar{
 }
 
 ul.timebar li{
+    height: 25px;
+    border-left: 2px solid #333333 ;
+
+    padding-top: 4px;
     position: relative;
     float: left;
     -webkit-touch-callout: none;

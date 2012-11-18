@@ -46,6 +46,24 @@ directives.directive('amaraEditableSubtitle', function (subtitleList, currentPla
         link:function (scope, elm, attrs) {
             var el = angular.element(elm[0]);
             var editableParagrah = $(elm[0]).children("p")[0];
+            editableParagrah.addEventListener('focus', function () {
+                // this little monster is the helper that
+                // selects all text in a div.
+                window.setTimeout(function() {
+                    var sel, range;
+                    if (window.getSelection && document.createRange) {
+                        range = document.createRange();
+                        range.selectNodeContents(editableParagrah);
+                        sel = window.getSelection();
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    } else if (document.body.createTextRange) {
+                        range = document.body.createTextRange();
+                        range.moveToElementText(editableParagrah);
+                        range.select();
+                    }
+                }, 1);
+            });
             editableParagrah.addEventListener('blur', function () {
                 scope.$root.$apply(function () {
                     scope.subtitle.text = $(editableParagrah).text();

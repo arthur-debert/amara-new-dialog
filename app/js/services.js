@@ -60,13 +60,18 @@ $provide.factory('subtitleList', function () {
                 return subtitles[index +1];
             },
             addSubtitle: function(subtitle, afterSubtitle){
-                var index = subtitles.length;
+                var index = subtitles.length ;
                 if (afterSubtitle ){
                     for (var i =0 ; i < subtitles.length; i++){
                         if (subtitles[i]==afterSubtitle){
                             index = i;
                         }
                     }
+                }
+                // if last, assume start and end times
+                if (! afterSubtitle){
+                    subtitle.start_time = subtitles[index - 1].end_time;
+                    subtitle.end_time = subtitle.start_time + 2000;
                 }
                 subtitles.splice(index, 0, subtitle);
 

@@ -9,15 +9,17 @@
     </div>
 
 
-    <div class='subtitlesVertical'>
+    <div class='subtitlesVertical' ng-controller='SubtitleList'>
         <form class="quickAddSubtitle" ng-submit='addSubtitle(newSubtitleText)'>
             <input ng-model="newSubtitleText" required placeholder="Add subtitle"/>
         </form>
-        <ul class="subtitleList" ng-controller='SubtitleList'>
-            <li ng-repeat='subtitle in subtitles' amara-editable-subtitle>
+        <ul class="subtitleList" >
+            <li ng-repeat='subtitle in subtitles' amara-editable-subtitle ng-controller='EditableSubtitle'>
                 <span class="subtitleTime small">{{subtitle.start_time|toClockTime}}</span><br>
                 <p contenteditable="true" ng-model="subtitle.text" ng-bind='subtitle.text'>{{subtitle.text}}</p>
-                <a class='hidden' href="#" ng-click="removeSubtitle(subtitle)">X</a>
+                <div ng-show="active">
+                <a  href="#" ng-click="removeSubtitle(subtitle)">X</a>
+                </div-show>
             </li>
         </ul>
     </div>

@@ -3,6 +3,14 @@
 /* Controllers */
 
 
+function EditableSubtitle($scope){
+    $scope.active = false;
+    this.setActive = function(isActive){
+        $scope.active = !!isActive;
+    }
+
+}
+
 function SubtitleList($scope, subtitleList) {
     $scope.subtitles = subtitleList.get();
     $scope.removeSubtitle = function(subtitle){

@@ -100,8 +100,8 @@ directives.directive('amaraEditableSubtitle', function (subtitleList, currentPla
                 scope.mustScrollToBottom = false;
             }
             var currentTime = currentPlayerTime.get();
-            if (scope.subtitle.start_time > currentTime &&
-                scope.subtitle.end_time < currentTime) {
+            if (scope.subtitle.startTime > currentTime &&
+                scope.subtitle.endTime < currentTime) {
                 el.addClass("currentlyPlaying");
             }
         }
@@ -159,10 +159,10 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
         var endTime = currentTime + millisecondsPerView;
         for (var i = 0; i < allSubtitles.length; i++) {
             var subtitle = allSubtitles[i];
-            if (subtitle.start_time > endTime) {
+            if (subtitle.startTime > endTime) {
                 break;
             }
-            if (subtitle.start_time > currentTime || (subtitle.end_time > currentTime && subtitle.end_time < endTime )) {
+            if (subtitle.startTime > currentTime || (subtitle.endTime > currentTime && subtitle.endTime < endTime )) {
                 subtitlesInView.push(subtitle);
             }
         }
@@ -216,8 +216,8 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     var playerTimeOffset  = null;
     function getSubtitlePos(subtitle, currentTime){
         return {
-            left: timeToPixels(subtitle.start_time) - timeToPixels(currentTime),
-            width : timeToPixels(subtitle.end_time - subtitle.start_time)
+            left: timeToPixels(subtitle.startTime) - timeToPixels(currentTime),
+            width : timeToPixels(subtitle.endTime - subtitle.startTime)
         }
 
     }
@@ -230,9 +230,9 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
         var targetX = event.pageX - startDraggingX + playerTimeOffset;
 
         if (targetX > minDragPos && targetX + cssPropToPixels(element.css("width"))< maxDragPos){
-            var duration = subtitle.end_time - subtitle.start_time;
-           subtitle.start_time = pixelsToTime(targetX);
-            subtitle.end_time = subtitle.start_time + duration;
+            var duration = subtitle.endTime - subtitle.startTime;
+           subtitle.startTime = pixelsToTime(targetX);
+            subtitle.endTime = subtitle.startTime + duration;
 
         }
     }
@@ -244,19 +244,19 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
         var width = cssPropToPixels(element.css("width"));
             if (resizingStartTime){
                 // if start time, move initial, keep final pos intact
-                subtitle.start_time = pixelsToTime(targetX) ;
-                var duration = subtitle.end_time - subtitle.start_time;
-                if (previousSubtitle && subtitle.start_time <= previousSubtitle.end_time &&
-                    subtitle.start_time > minNewTime){
-                    previousSubtitle.end_time = subtitle.start_time;
+                subtitle.startTime = pixelsToTime(targetX) ;
+                var duration = subtitle.endTime - subtitle.startTime;
+                if (previousSubtitle && subtitle.startTime <= previousSubtitle.endTime &&
+                    subtitle.startTime > minNewTime){
+                    previousSubtitle.endTime = subtitle.startTime;
                 }
             }else{
                 // end time, let left alone, increase width
                 var newWidth = targetX - left;
-                subtitle.end_time = pixelsToTime( left + newWidth );
-                if (nextSubtitle && subtitle.end_time >= nextSubtitle.start_time &&
-                    subtitle.end_time < maxNewTime){
-                    nextSubtitle.start_time = subtitle.end_time;
+                subtitle.endTime = pixelsToTime( left + newWidth );
+                if (nextSubtitle && subtitle.endTime >= nextSubtitle.startTime &&
+                    subtitle.endTime < maxNewTime){
+                    nextSubtitle.startTime = subtitle.endTime;
                 }
             }
     }
@@ -270,8 +270,8 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
            draggingMode = 'moving';
            startDraggingX =  event.pageX - element.offset().left;
            var minDragPos = previousSubtitle ?
-               timeToPixels(previousSubtitle.end_time) : 0;
-           var maxDragPos = nextSubtitle? timeToPixels(nextSubtitle.start_time) : 500000;
+               timeToPixels(previousSubtitle.endTime) : 0;
+           var maxDragPos = nextSubtitle? timeToPixels(nextSubtitle.startTime) : 500000;
            $(document).mousemove (function(event) {
                onMoving(event, element, subtitle, minDragPos, maxDragPos);
                scope.$root.$broadcast("subtitleChanged")
@@ -284,11 +284,11 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
            resizingStartTime = false;
            if (x <= RESIZE_HIT_AREA ){
                 resizingStartTime = true;
-               minNewTime = previousSubtitle? previousSubtitle.start_time + MIN_SUBTITLE_DURATION: 0;
-               maxNewTime = subtitle.end_time - MIN_SUBTITLE_DURATION;
+               minNewTime = previousSubtitle? previousSubtitle.startTime + MIN_SUBTITLE_DURATION: 0;
+               maxNewTime = subtitle.endTime - MIN_SUBTITLE_DURATION;
             }else{
-               maxNewTime = nextSubtitle ? nextSubtitle.end_time - MIN_SUBTITLE_DURATION: 30000;
-               minNewTime = subtitle.start_time + MIN_SUBTITLE_DURATION;
+               maxNewTime = nextSubtitle ? nextSubtitle.endTime - MIN_SUBTITLE_DURATION: 30000;
+               minNewTime = subtitle.startTime + MIN_SUBTITLE_DURATION;
            }
            $(document).mousemove (function(event) {
                onResizing(event, element, subtitle, previousSubtitle, nextSubtitle , minNewTime, maxNewTime );

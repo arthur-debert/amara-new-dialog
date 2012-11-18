@@ -21,8 +21,8 @@ $provide.factory('subtitleList', function () {
         }
         subtitles.push({
             text: i + ") " + bacon.substr(0, randIntRange(8, 72)),
-            start_time: currentTime,
-            end_time: currentTime + duration
+            startTime: currentTime,
+            endTime: currentTime + duration
         });
         if (randomizeTimes){
             currentTime += duration + randIntRange(200, 3000);
@@ -70,8 +70,8 @@ $provide.factory('subtitleList', function () {
                 }
                 // if last, assume start and end times
                 if (! afterSubtitle){
-                    subtitle.start_time = subtitles[index - 1].end_time;
-                    subtitle.end_time = subtitle.start_time + 2000;
+                    subtitle.startTime = subtitles[index - 1].endTime;
+                    subtitle.endTime = subtitle.startTime + 2000;
                 }
                 subtitles.splice(index, 0, subtitle);
 

@@ -70,7 +70,13 @@ directives.directive('amaraEditableSubtitle', function (subtitleList, currentPla
                 // if text is empty, restore to the text on focus
                 // easy cop out, but just saner than alternatives
                 // (deleting, sub, etc)
-                if ($(editableParagrah).text() == ''){
+                var text = $(editableParagrah).text();
+                if(!String.prototype.trim) {
+                    text  = text.replace(/^\s+|\s+$/g,'');
+                }else{
+                    text = text.trim();
+                }
+                if (text == ''){
                     $(editableParagrah).text(textOnFocus);
                     return;
                 }

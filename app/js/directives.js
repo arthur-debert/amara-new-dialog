@@ -41,17 +41,25 @@ function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView)
 }
 
 var directives = angular.module('myApp.directives', []);
-directives.directive('amaraEditableSubtitle', function (currentPlayerTime) {
+directives.directive('amaraEditableSubtitle', function (subtitleList, currentPlayerTime) {
     return {
         link:function (scope, elm, attrs) {
             var el = angular.element(elm[0]);
             var editableParagrah = $(elm[0]).children("p")[0];
             editableParagrah.addEventListener('blur', function () {
-                scope.$apply(function () {
+                scope.$root.$apply(function () {
                     scope.subtitle.text = $(editableParagrah).text();
+                    scope.$root.subtitles = subtitleList.get();
+                    console.log(scope.$root.subtitles[_.indexOf(subtitleList.get(), scope.subtitle)])
                 });
                 scope.$emit("subtitleChanged")
             }, false);
+            $(editableParagrah).keypress(function(event){
+                if (event.keyCode == 13 && ! event.shiftKey){
+                    event.preventDefault();
+                    editableParagrah.blur();
+                }
+            });
             if (scope.mustScrollToBottom) {
                 var parent = elm[0].parentElement;
                 parent.scrollTop = parent.scrollHeight - parent.offsetHeight;
@@ -83,7 +91,7 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
         var markerTimes = getMarkerTimes(currentTime, markerEveryMilliseconds, millisecondsPerView);
         _.each(markerTimes, function (markerTime, i) {
             var ticker = $("<li>");
-            ticker.text($filter("showTime")(markerTime ));
+            ticker.text($filter("toClockTime")(markerTime ));
             // position
             var xPos = timeToPixels(markerTime) - xOffset;
             ticker.css("left", xPos);
@@ -181,6 +189,7 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     }
     function repositionSubtitle(elm, subtitle, currentTime) {
         elm.css(getSubtitlePos(subtitle, currentTime));
+        elm.text(subtitle.text);
     }
 
     function onMoving(event, element, subtitle, minDragPos, maxDragPos){
@@ -267,7 +276,6 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     return {
         link:function (scope, elm, attrs) {
             var subtitle = scope.subtitle;
-            elm.text(subtitle.text);
 
             elm.addClass('subtitleBubble');
             elm.mousemove(function (event) {
@@ -276,7 +284,7 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
             scope.$on('playerTimeChanged', function(event, newTime){
                 repositionSubtitle(elm, scope.subtitle, newTime);
             });
-            scope.$on("subtitleChanged", function () {
+            scope.$root.$on("subtitleChanged", function () {
                 repositionSubtitle(elm, scope.subtitle, currentPlayerTime.get());
             })
             repositionSubtitle(elm, scope.subtitle, currentPlayerTime.get());
@@ -284,6 +292,9 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
                 onStartDrag(event, elm, subtitle, scope);
                 $(document).mouseup(function(event){
                     $(document).unbind('mousemove') ;
+                    scope.$root.$apply(function(){
+                    scope.$root.subtitles = subtitleList.get();
+                    });
                 })
             })
         }

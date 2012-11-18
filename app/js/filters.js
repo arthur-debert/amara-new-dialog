@@ -3,7 +3,7 @@
 /* Filters */
 
 angular.module('myApp.filters', []).
-  filter('showTime',  function() {
+  filter('toClockTime',  function() {
     return function(text) {
         if (! text ){
             text = "0";

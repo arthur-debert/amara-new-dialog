@@ -15,7 +15,7 @@
         </form>
         <ul class="subtitleList" ng-controller='SubtitleList'>
             <li ng-repeat='subtitle in subtitles' amara-editable-subtitle>
-                <span class="subtitleTime small">{{subtitle.start_time|showTime}}</span><br>
+                <span class="subtitleTime small">{{subtitle.start_time|toClockTime}}</span><br>
                 <p contenteditable="true" ng-model="subtitle.text" ng-bind='subtitle.text'>{{subtitle.text}}</p>
                 <a class='hidden' href="#" ng-click="removeSubtitle(subtitle)">X</a>
             </li>

@@ -168,9 +168,9 @@ ul.timebar li{
     height: 25px;
     border-left: 2px solid #333333 ;
 
-    padding-top: 4px;
-    position: relative;
-    float: left;
+    padding-top: 6px;
+    padding-left: 4px;
+    position: absolute;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;

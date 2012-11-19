@@ -145,7 +145,7 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
     var timelineEl = undefined;
     var timeNeedle;
 
-    function redrawTimeline( timebarEl, currentTime) {
+    function redrawTimebar( timebarEl, currentTime) {
 
         $(timebarEl).children("li").remove();
         var timeStart = 0;
@@ -211,7 +211,7 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
             timelineEl = $("div.timeline", elm);
             timebarEl.css("width", viewWidth + "px");
             timelineEl.css("width", viewWidth + "px");
-            redrawTimeline(timebarEl, currentPlayerTime.get());
+            redrawTimebar(timebarEl, currentPlayerTime.get());
             function onStartTimelineDrag(e) {
                 currentMouseX = previousMouseX = e.pageX;
                 dragTimeout = setInterval(onDragging, 40);
@@ -235,11 +235,11 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
             timebarEl.mousedown(onStartTimelineDrag);
             $(document).mouseup(onStopDragging);
             scope.$on("subtitleChanged", function () {
-                redrawTimeline(timebarEl, currentPlayerTime.get());
+                redrawTimebar(timebarEl, currentPlayerTime.get());
             })
             scope.subtitlesInView = getSubtitlesInView(subtitleList.get(), currentPlayerTime.get());
             scope.$on("playerTimeChanged", function (event, newTime) {
-                redrawTimeline(timebarEl, newTime);
+                redrawTimebar(timebarEl, newTime);
                 scope.$$childHead.onTimeChanged(getSubtitlesInView(subtitleList.get(), newTime))
 
             });

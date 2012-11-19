@@ -128,7 +128,7 @@ form.quickAddSubtitle input{
 
 ul.subtitleList{
     position: relative;
-    overflow: auto;
+    overflow: hidden;
     height: 500px;
 }
 ul.subtitleList li{
@@ -161,6 +161,7 @@ ul.timebar{
     background: rgb(35,35,35) ;
     color: rgb(210, 210, 210);
     border-bottom: 5px solid #323232;
+    overflow:hidden;
 }
 
 ul.timebar li{
@@ -188,6 +189,7 @@ div.timeline {
     cursor: pointer;
     background: rgb(40,40,40);
     height: 43px;
+    overflow: hidden;
 }
 div.timeline  div.subtitleBubble{
     float:left;

@@ -1,10 +1,10 @@
 'use strict';
 
 /* Directives */
-var viewWidth = 620;
+var viewWidth = 640;
 var zoomLevel = 1;
 // normalized to zoom level 1
-var millisecondsPerView = 6200;
+var millisecondsPerView = 5000;
 var pixelsPerMillisecond = (viewWidth / millisecondsPerView) * zoomLevel;
 var currentMouseX, previousMouseX = undefined;
 
@@ -27,7 +27,10 @@ function nextMarkerTime(currentTime, markerEveryMilliseconds) {
 function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView) {
     var times = [];
     var finalTime = startTime + millisecondsPerView;
-    var startSecond = Math.ceil(startTime / 1000)
+    // time to start drawing must be to the left of the screen
+    // because some elements will begin off view port, but will
+    // end already on viewport
+    var startSecond = Math.ceil((startTime - (millisecondsPerView/3)) / 1000);
     var endSecond = Math.ceil(finalTime / 1000);
     var step = Math.ceil((endSecond - startSecond) / (millisecondsPerView)/ markerEveryMilliseconds);
     for (var i = startSecond; i <= endSecond; i+=step){

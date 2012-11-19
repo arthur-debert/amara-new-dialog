@@ -11,6 +11,14 @@ var currentMouseX, previousMouseX = undefined;
 
 var markerEveryMilliseconds = 500;
 
+function getTimeToStart(currentTime, millisecondsPerView){
+    var timeStart = 0;
+    if ((currentTime - millisecondsPerView/2 ) > 0){
+        timeStart = currentTime - millisecondsPerView/2;
+    }
+    return timeStart;
+}
+
 function cssPropToPixels(val){
     return parseInt(val.substring(0, val.indexOf('p')));
 }
@@ -145,13 +153,10 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
     var timelineEl = undefined;
     var timeNeedle;
 
-    function redrawTimebar( timebarEl, currentTime) {
 
+    function redrawTimebar( timebarEl, currentTime) {
         $(timebarEl).children("li").remove();
-        var timeStart = 0;
-        if ((currentTime - millisecondsPerView/2 ) > 0){
-            timeStart = currentTime - millisecondsPerView/2;
-        }
+        var timeStart = getTimeToStart(currentTime, millisecondsPerView);
         var xOffset = timeToPixels(timeStart);
         var markerTimes = getMarkerTimes(timeStart, markerEveryMilliseconds, millisecondsPerView);
         _.each(markerTimes, function (markerTime, i) {
@@ -190,13 +195,15 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
 
     function getSubtitlesInView(allSubtitles, currentTime) {
         var subtitlesInView = [];
-        var endTime = currentTime + millisecondsPerView;
+        var startTime = getTimeToStart(currentTime, millisecondsPerView);
+        var endTime = startTime + millisecondsPerView;
+
         for (var i = 0; i < allSubtitles.length; i++) {
             var subtitle = allSubtitles[i];
             if (subtitle.startTime > endTime) {
                 break;
             }
-            if (subtitle.startTime > currentTime || (subtitle.endTime > currentTime && subtitle.endTime < endTime )) {
+            if (subtitle.startTime > startTime || (subtitle.endTime > startTime && subtitle.endTime < endTime )) {
                 subtitlesInView.push(subtitle);
             }
         }
@@ -258,13 +265,14 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     var playerTimeOffset  = null;
     function getSubtitlePos(subtitle, currentTime){
         return {
-            left: timeToPixels(subtitle.startTime) - timeToPixels(currentTime),
+            left: timeToPixels(subtitle.startTime) - timeToPixels(getTimeToStart(currentTime, millisecondsPerView)),
             width : timeToPixels(subtitle.endTime - subtitle.startTime)
         }
 
     }
     function repositionSubtitle(elm, subtitle, currentTime) {
-        elm.css(getSubtitlePos(subtitle, currentTime));
+        var pos = getSubtitlePos(subtitle, currentTime);
+        elm.css(pos);
         elm.text(subtitle.text);
     }
 

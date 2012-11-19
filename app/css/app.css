@@ -178,6 +178,7 @@ ul.timebar li{
     user-select: none;
 }
 .timeNeedle{
+    pointer-events: none;
     z-index: 1000;
     position: absolute;
     float:none;

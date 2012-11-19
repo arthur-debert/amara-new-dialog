@@ -162,7 +162,6 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
         });
 
         $(timeNeedle).css('left' , timeToPixels(currentTime) - xOffset);
-        console.log(currentTime, timeStart);
 
 
     }
@@ -203,15 +202,6 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
 
     return {
         link:function (scope, elm, attrs) {
-            $(document).keydown(function(event){
-               console.log(event.keyCode)  ;
-                if (event.keyCode == 39){
-                    currentPlayerTime.set(currentPlayerTime.get() + 1000);
-                }else if (event.keyCode == 37){
-                    currentPlayerTime.set(currentPlayerTime.get() - 1000);
-                }
-                event.preventDefault();
-            })
             var dragTimeout = undefined;
             timebarEl = $("ul.timebar");
 
@@ -372,11 +362,13 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
             })
             repositionSubtitle(elm, scope.subtitle, currentPlayerTime.get());
             elm.mousedown(function(event){
+                elm.controller().active = true;
                 onStartDrag(event, elm, subtitle, scope);
                 $(document).mouseup(function(event){
                     $(document).unbind('mousemove') ;
                     scope.$root.$apply(function(){
                     scope.$root.subtitles = subtitleList.get();
+                    elm.controller().active = false;
                     });
                 })
             })

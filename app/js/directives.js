@@ -30,7 +30,6 @@ function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView)
     var startSecond = Math.ceil(startTime / 1000)
     var endSecond = Math.ceil(finalTime / 1000);
     var step = Math.ceil((endSecond - startSecond) / (millisecondsPerView)/ markerEveryMilliseconds);
-    var currentTime = startSecond;
     for (var i = startSecond; i <= endSecond; i+=step){
         var nextMarkerT = i * 1000;
         if (nextMarkerT < finalTime) {
@@ -143,11 +142,15 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
     var timelineEl = undefined;
     var timeNeedle;
 
-    function redrawTimeline( timebarEl, currentTime, subtitles) {
+    function redrawTimeline( timebarEl, currentTime) {
 
         $(timebarEl).children("li").remove();
-        var xOffset = timeToPixels(currentTime);
-        var markerTimes = getMarkerTimes(currentTime, markerEveryMilliseconds, millisecondsPerView);
+        var timeStart = 0;
+        if ((currentTime - millisecondsPerView/2 ) > 0){
+            timeStart = currentTime - millisecondsPerView/2;
+        }
+        var xOffset = timeToPixels(timeStart);
+        var markerTimes = getMarkerTimes(timeStart, markerEveryMilliseconds, millisecondsPerView);
         _.each(markerTimes, function (markerTime, i) {
             var ticker = $("<li>");
             ticker.text($filter("toClockTime")(markerTime ));
@@ -159,7 +162,7 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
         });
 
         $(timeNeedle).css('left' , timeToPixels(currentTime) - xOffset);
-        console.log(currentTime);
+        console.log(currentTime, timeStart);
 
 
     }
@@ -200,6 +203,15 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
 
     return {
         link:function (scope, elm, attrs) {
+            $(document).keydown(function(event){
+               console.log(event.keyCode)  ;
+                if (event.keyCode == 39){
+                    currentPlayerTime.set(currentPlayerTime.get() + 1000);
+                }else if (event.keyCode == 37){
+                    currentPlayerTime.set(currentPlayerTime.get() - 1000);
+                }
+                event.preventDefault();
+            })
             var dragTimeout = undefined;
             timebarEl = $("ul.timebar");
 
@@ -230,7 +242,7 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
             timebarEl.mousedown(onStartTimelineDrag);
             $(document).mouseup(onStopDragging);
             scope.$on("subtitleChanged", function () {
-                redrawTimeline(timebarEl, currentPlayerTime.get(), subtitleList.get());
+                redrawTimeline(timebarEl, currentPlayerTime.get());
             })
             scope.subtitlesInView = getSubtitlesInView(subtitleList.get(), currentPlayerTime.get());
             scope.$on("playerTimeChanged", function (event, newTime) {

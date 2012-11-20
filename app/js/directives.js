@@ -22,8 +22,8 @@ function getTimeToStart(currentTime, millisecondsPerView){
 function cssPropToPixels(val){
     return parseInt(val.substring(0, val.indexOf('p')));
 }
-function timeToPixels(time) {
-    return (time * pixelsPerMillisecond) ;
+function timeToPixels(time, currentTime) {
+    return time * pixelsPerMillisecond ;
 }
 function pixelsToTime(pixels) {
     return parseInt(pixels / pixelsPerMillisecond)
@@ -155,21 +155,26 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
 
 
     function redrawTimebar( timebarEl, currentTime) {
-        $(timebarEl).children("li").remove();
         var timeStart = getTimeToStart(currentTime, millisecondsPerView);
         var xOffset = timeToPixels(timeStart);
+        var timebarToMove = $(".timelineInner", timebarEl);
+
+        $(timebarToMove).children(".ticker").remove();
+        $(timelineEl).css('left', -xOffset);
+        $(timebarToMove).css('left', -xOffset);
         var markerTimes = getMarkerTimes(timeStart, markerEveryMilliseconds, millisecondsPerView);
         _.each(markerTimes, function (markerTime, i) {
-            var ticker = $("<li>");
-            ticker.text($filter("toClockTime")(markerTime ));
-            // position
-            var xPos = timeToPixels(markerTime) - xOffset;
-            ticker.css("left", xPos);
-            timebarEl.append(ticker);
+            var xPos = timeToPixels(markerTime) ;
+            var ticker = $("<div>").
+                addClass("ticker").
+                text($filter("toClockTime")(markerTime )).
+                css("left", xPos);
+            timebarToMove.append(ticker);
 
         });
 
-        $(timeNeedle).css('left' , timeToPixels(currentTime) - xOffset);
+        // the needle is svg positioned as absolute
+        $(timeNeedle).css('left' , timeToPixels(currentTime) -xOffset );
 
 
     }
@@ -213,11 +218,11 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
     return {
         link:function (scope, elm, attrs) {
             var dragTimeout = undefined;
-            timebarEl = $("ul.timebar");
+            timebarEl = $(".timebar");
 
-            timelineEl = $("div.timeline", elm);
+            timelineEl = $("div.timeline div.timelineInner", elm);
             timebarEl.css("width", viewWidth + "px");
-            timelineEl.css("width", viewWidth + "px");
+            timelineEl.parent().css("width", viewWidth + "px");
             redrawTimebar(timebarEl, currentPlayerTime.get());
             function onStartTimelineDrag(e) {
                 currentMouseX = previousMouseX = e.pageX;
@@ -265,7 +270,7 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     var playerTimeOffset  = null;
     function getSubtitlePos(subtitle, currentTime){
         return {
-            left: timeToPixels(subtitle.startTime) - timeToPixels(getTimeToStart(currentTime, millisecondsPerView)),
+            left: timeToPixels(subtitle.startTime) ,
             width : timeToPixels(subtitle.endTime - subtitle.startTime)
         }
 
@@ -276,8 +281,9 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
         elm.text(subtitle.text);
     }
 
-    function onMoving(event, element, subtitle, minDragPos, maxDragPos){
-        var targetX = event.pageX - startDraggingX + playerTimeOffset;
+    function onMoving(event, element, subtitle, minDragPos, maxDragPos, mouseOffset){
+        var targetX = event.pageX - element.offset().left -  mouseOffset;
+        console.log(event.pageX ,element.parent().offset().left, element.offset().left, mouseOffset)
 
         if (targetX > minDragPos && targetX + cssPropToPixels(element.css("width"))< maxDragPos){
             var duration = subtitle.endTime - subtitle.startTime;
@@ -287,7 +293,9 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
         }
     }
     function onResizing(event, element, subtitle, previousSubtitle, nextSubtitle, minNewTime, maxNewTime){
-        var targetX = event.pageX + playerTimeOffset ;
+        var targetX = event.pageX - element.parent().offset().left;
+        var firstTargetX = targetX;
+
         targetX = Math.max(timeToPixels(minNewTime), targetX);
         targetX = Math.min(timeToPixels(maxNewTime), targetX);
         var left = cssPropToPixels(element.css("left"));
@@ -313,21 +321,23 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
 
     function onStartDrag(event, element, subtitle, scope){
 
+        // get the x pos relative to the parent div
+        startDraggingX = event.pageX - element.parent().offset().left;
         playerTimeOffset = timeToPixels(currentPlayerTime.get());
         var previousSubtitle = subtitleList.getPrevious(subtitle);
         var nextSubtitle = subtitleList.getNext(subtitle);
        if(element.css('cursor')=='move') {
+           startDraggingX = event.pageX - element.offset().left;
            draggingMode = 'moving';
-           startDraggingX =  event.pageX - element.offset().left;
            var minDragPos = previousSubtitle ?
                timeToPixels(previousSubtitle.endTime) : 0;
            var maxDragPos = nextSubtitle? timeToPixels(nextSubtitle.startTime) : 500000;
+           var mouseOffset = event.pageX - element.offset().left;
            $(document).mousemove (function(event) {
-               onMoving(event, element, subtitle, minDragPos, maxDragPos);
+               onMoving(event, element, subtitle, minDragPos, maxDragPos, mouseOffset);
                scope.$root.$broadcast("subtitleChanged")
            });
        }else{
-           startDraggingX = event.pageX;
            draggingMode = 'resizing';
            var x = event.pageX - $(element).offset().left;
            var RESIZE_HIT_AREA = 10;
@@ -373,13 +383,18 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
             })
             repositionSubtitle(elm, scope.subtitle, currentPlayerTime.get());
             elm.mousedown(function(event){
-                elm.controller().active = true;
+                var controller = elm.controller();
+                if(controller ){
+                    controller.active = true;
+                }
                 onStartDrag(event, elm, subtitle, scope);
                 $(document).mouseup(function(event){
                     $(document).unbind('mousemove') ;
                     scope.$root.$apply(function(){
                     scope.$root.subtitles = subtitleList.get();
-                    elm.controller().active = false;
+                    if(controller ){
+                        controller.active = false;
+                    }
                     });
                 })
             })

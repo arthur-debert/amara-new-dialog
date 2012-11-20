@@ -1,9 +1,12 @@
 <div  sync-panel>
-    <ul class="timebar" >
+    <div class="timebar" >
         <span class="timeNeedle"></span>
-    </ul>
+        <div class='timelineInner'></div>
+    </div>
     <div class='timeline' ng-controller='TimeLine'>
+        <div class='timelineInner'>
         <div ng-repeat='subtitle in subtitlesInView' ng-controller='SubtitleBubble' data-subtitle-bubble></div>
+            </div>
     </div>
     <div class='timelineTools'>
 

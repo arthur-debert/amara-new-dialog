@@ -150,8 +150,8 @@ ul.subtitleList li.active{
     float: right;
 }
 
-ul.timebar{
-   list-style: none;
+.timebar{
+
     cursor: pointer;
     background: gray ;
     height:25px;
@@ -164,13 +164,12 @@ ul.timebar{
     overflow:hidden;
 }
 
-ul.timebar li{
+.timebar div{
     height: 25px;
     border-left: 2px solid #333333 ;
-
+    position:absolute;
     padding-top: 6px;
     padding-left: 4px;
-    position: absolute;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -184,14 +183,16 @@ ul.timebar li{
     position: absolute;
     float:none;
 }
-div.timeline {
-    position: relative;
+.timeline {
     cursor: pointer;
     background: rgb(40,40,40);
     height: 43px;
     overflow: hidden;
 }
-div.timeline  div.subtitleBubble{
+.timelineInner{
+    position:relative;
+}
+.timeline  div.subtitleBubble{
     float:left;
     color: white;
     position: absolute;

@@ -282,12 +282,10 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     }
 
     function onMoving(event, element, subtitle, minDragPos, maxDragPos, mouseOffset){
-        var targetX = event.pageX - element.offset().left -  mouseOffset;
-        console.log(event.pageX ,element.parent().offset().left, element.offset().left, mouseOffset)
-
+        var targetX = event.pageX -  mouseOffset ;
         if (targetX > minDragPos && targetX + cssPropToPixels(element.css("width"))< maxDragPos){
             var duration = subtitle.endTime - subtitle.startTime;
-           subtitle.startTime = pixelsToTime(targetX);
+           subtitle.startTime = pixelsToTime(targetX - element.parent().offset().left) ;
             subtitle.endTime = subtitle.startTime + duration;
 
         }
@@ -330,8 +328,8 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
            startDraggingX = event.pageX - element.offset().left;
            draggingMode = 'moving';
            var minDragPos = previousSubtitle ?
-               timeToPixels(previousSubtitle.endTime) : 0;
-           var maxDragPos = nextSubtitle? timeToPixels(nextSubtitle.startTime) : 500000;
+               timeToPixels(previousSubtitle.endTime) + element.parent().offset().left : 1;
+           var maxDragPos = nextSubtitle? timeToPixels(nextSubtitle.startTime) + element.parent().offset().left : 500000;
            var mouseOffset = event.pageX - element.offset().left;
            $(document).mousemove (function(event) {
                onMoving(event, element, subtitle, minDragPos, maxDragPos, mouseOffset);

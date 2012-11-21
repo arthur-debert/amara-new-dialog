@@ -128,7 +128,7 @@ form.quickAddSubtitle input{
 
 ul.subtitleList{
     position: relative;
-    overflow: hidden;
+    overflow: scroll;
     height: 500px;
 }
 ul.subtitleList li{

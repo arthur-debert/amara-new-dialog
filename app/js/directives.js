@@ -54,6 +54,7 @@ var directives = angular.module('myApp.directives', []);
 directives.directive('subtitleList', function (subtitleList, currentPlayerTime) {
     var hasWindowResize = false;
     function resizeSubtitleList(window, elm){
+        console.log('resizing it')
         var height = $(window).height() - $(elm).offset().top - 2;
         height = Math.max(40, height);
         $(elm).css("height", height + "px");
@@ -278,7 +279,6 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     function repositionSubtitle(elm, subtitle, currentTime) {
         var pos = getSubtitlePos(subtitle, currentTime);
         elm.css(pos);
-        //elm.text(subtitle.text);
     }
 
     function onMoving(event, element, subtitle, minDragPos, maxDragPos, mouseOffset){

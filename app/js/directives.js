@@ -54,7 +54,6 @@ var directives = angular.module('myApp.directives', []);
 directives.directive('subtitleList', function (subtitleList, currentPlayerTime) {
     var hasWindowResize = false;
     function resizeSubtitleList(window, elm){
-        console.log('resizing it')
         var height = $(window).height() - $(elm).offset().top - 2;
         height = Math.max(40, height);
         $(elm).css("height", height + "px");
@@ -151,7 +150,7 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
      * @type {undefined}
      */
     var timebarEl = undefined;
-    var timelineEl = undefined;
+    var track = undefined;
     var timeNeedle;
 
 
@@ -161,7 +160,7 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
         var timebarToMove = $(".timelineInner", timebarEl);
 
         $(timebarToMove).children(".ticker").remove();
-        $(timelineEl).css('left', -xOffset);
+        $(track).css('left', -xOffset);
         $(timebarToMove).css('left', -xOffset);
         var markerTimes = getMarkerTimes(timeStart, markerEveryMilliseconds, millisecondsPerView);
         _.each(markerTimes, function (markerTime, i) {
@@ -221,9 +220,9 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
             var dragTimeout = undefined;
             timebarEl = $(".timebar");
 
-            timelineEl = $("div.timeline div.timelineInner", elm);
+            track = $("div.track div.timelineInner", elm);
             timebarEl.css("width", viewWidth + "px");
-            timelineEl.parent().css("width", viewWidth + "px");
+            track.parent().css("width", viewWidth + "px");
             redrawTimebar(timebarEl, currentPlayerTime.get());
             function onStartTimelineDrag(e) {
                 currentMouseX = previousMouseX = e.pageX;
@@ -383,15 +382,16 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
             elm.mousedown(function(event){
                 var controller = elm.controller();
                 if(controller ){
-                    controller.active = true;
+                    //controller.setActive(true);
                 }
+                console.log(elm, controller)
                 onStartDrag(event, elm, subtitle, scope);
                 $(document).mouseup(function(event){
                     $(document).unbind('mousemove') ;
                     scope.$root.$apply(function(){
                     scope.$root.subtitles = subtitleList.get();
                     if(controller ){
-                        controller.active = false;
+                        //controller.setActive(false);
                     }
                     });
                 })

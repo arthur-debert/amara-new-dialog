@@ -183,7 +183,7 @@ ul.subtitleList li.active{
     position: absolute;
     float:none;
 }
-.timeline {
+.track {
     cursor: pointer;
     background: rgb(40,40,40);
     height: 43px;
@@ -192,7 +192,7 @@ ul.subtitleList li.active{
 .timelineInner{
     position:relative;
 }
-.timeline  div.subtitleBubble{
+.track  div.subtitleBubble{
     float:left;
     color: white;
     position: absolute;
@@ -224,7 +224,7 @@ ul.subtitleList li.active{
     border-radius: 4px;
 }
 
-.timeline .subtitleBubble .text{
+.track .subtitleBubble .text{
 
     margin-left: 3px;
     margin-right: 4px:

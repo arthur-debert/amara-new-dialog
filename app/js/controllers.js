@@ -33,7 +33,7 @@ function SubtitleList($scope, subtitleList, currentPlayerTime) {
 }
 //SubtitleList.$inject(["$scope", "subtitleList"])
 
-function TimeLine($scope, subtitleList, currentPlayerTime){
+function Track($scope, subtitleList, currentPlayerTime){
     this.$scope = $scope;
 
     $scope.magic = "hey"
@@ -47,8 +47,7 @@ function TimeLine($scope, subtitleList, currentPlayerTime){
     }
 
 }
-//TimeLine.$inject(["$scope", "subtitleList", "currentPlayerTime"])
+//Track.$inject(["$scope", "subtitleList", "currentPlayerTime"])
 function SubtitleBubble($scope, subtitleList){
 }
-//TimeLine.$inject(["$scope", "subtitleList"])
 

@@ -258,7 +258,7 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
         }
     }
 });
-directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime) {
+directives.directive('trackItem', function (subtitleList, currentPlayerTime) {
 
     var MIN_SUBTITLE_DURATION = 500;
     var draggingMode = null;
@@ -268,15 +268,15 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     var maxNewTime = null;
     var draggingInterval = null;
     var playerTimeOffset  = null;
-    function getSubtitlePos(subtitle, currentTime){
+    function getItemPos(subtitle, currentTime){
         return {
             left: timeToPixels(subtitle.startTime) ,
             width : timeToPixels(subtitle.endTime - subtitle.startTime)
         }
 
     }
-    function repositionSubtitle(elm, subtitle, currentTime) {
-        var pos = getSubtitlePos(subtitle, currentTime);
+    function repositionItem(elm, subtitle, currentTime) {
+        var pos = getItemPos(subtitle, currentTime);
         elm.css(pos);
     }
 
@@ -353,7 +353,7 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
            });
        }
     }
-    function onSubtitleBubbleMouseMove(element, subtitle, event) {
+    function onTrackItemMouseMove(element, subtitle, event) {
         var cursorType = 'move';
         var x = event.pageX - $(element).offset().left;
         var RESIZE_HIT_AREA = 10;
@@ -370,21 +370,20 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
 
             elm.addClass('subtitleBubble');
             elm.mousemove(function (event) {
-                onSubtitleBubbleMouseMove(elm, subtitle, event);
+                onTrackItemMouseMove(elm, subtitle, event);
             });
             scope.$on('playerTimeChanged', function(event, newTime){
-                repositionSubtitle(elm, scope.subtitle, newTime);
+                repositionItem(elm, scope.subtitle, newTime);
             });
             scope.$root.$on("subtitleChanged", function () {
-                repositionSubtitle(elm, scope.subtitle, currentPlayerTime.get());
-            })
-            repositionSubtitle(elm, scope.subtitle, currentPlayerTime.get());
+                repositionItem(elm, scope.subtitle, currentPlayerTime.get());
+            });
+            repositionItem(elm, scope.subtitle, currentPlayerTime.get());
             elm.mousedown(function(event){
                 var controller = elm.controller();
                 if(controller ){
                     //controller.setActive(true);
                 }
-                console.log(elm, controller)
                 onStartDrag(event, elm, subtitle, scope);
                 $(document).mouseup(function(event){
                     $(document).unbind('mousemove') ;

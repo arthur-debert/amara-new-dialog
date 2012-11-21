@@ -48,6 +48,6 @@ function Track($scope, subtitleList, currentPlayerTime){
 
 }
 //Track.$inject(["$scope", "subtitleList", "currentPlayerTime"])
-function SubtitleBubble($scope, subtitleList){
+function TrackItem($scope, subtitleList){
 }
 

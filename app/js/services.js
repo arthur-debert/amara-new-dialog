@@ -89,7 +89,27 @@ $provide.factory('subtitleList', function () {
 
 $provide.factory('currentPlayerTime', ['$rootScope', function($scope){
    var currentTime = 0;
+   var timeInterval = undefined;
+    var lastTimeStamp = undefined;
+    var suspended = false;
+    function updatePlayTime(){
+        var newTime = new Date().getTime();
+        if (!suspended){
+            currentTime += (newTime - lastTimeStamp) ;
+            $scope.$broadcast("playerTimeChanged", currentTime)
+        }
+        lastTimeStamp = newTime;
+    }
     return {
+        /**
+         * If suspended and playing, won't updated the current time.
+         * This is used when user interaction (timeline dragging, or
+         * track item resizing are taking place).
+         * @param isSuspended
+         */
+        suspend: function(isSuspended){
+            suspended = isSuspended;
+        },
         get: function(){
             return currentTime;
         },
@@ -107,6 +127,28 @@ $provide.factory('currentPlayerTime', ['$rootScope', function($scope){
                 currentTime = newTime;
                 $scope.$broadcast("playerTimeChanged", newTime)
             }
+        },
+        isPlaying: function(){
+            return timeInterval !== undefined;
+        },
+        playPause: function(){
+            if (this.isPlaying()){
+                this.pause();
+                return false;
+            }else{
+                this.play();
+                return true;
+            }
+        },
+        play: function(){
+            clearInterval(timeInterval);
+            timeInterval = undefined;
+            lastTimeStamp = new Date().getTime();
+            timeInterval = setInterval(updatePlayTime, 10)
+        },
+        pause: function(){
+            clearInterval(timeInterval);
+            timeInterval = undefined;
         }
     }
 }])

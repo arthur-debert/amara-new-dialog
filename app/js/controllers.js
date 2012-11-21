@@ -51,3 +51,17 @@ function Track($scope, subtitleList, currentPlayerTime){
 function TrackItem($scope, subtitleList){
 }
 
+function VideoPlayerCallToAction($scope, currentPlayerTime){
+    $scope.isPlaying = currentPlayerTime.isPlaying();
+    $scope.updatePlayheadTime = function(newTime){
+        $scope.playheadTime = newTime;
+    };
+    $scope.$on("playerTimeChanged", function(event, newTime){
+        $scope.updatePlayheadTime(newTime);
+    });
+    $scope.onPlayPausePressed = function (){
+        $scope.isPlaying = currentPlayerTime.playPause();
+    }
+}
+//VideoPlayerCallToAction.$inject(["$scope", "subtitleList", "currentPlayerTime"])
+

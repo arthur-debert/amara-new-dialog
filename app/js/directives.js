@@ -225,12 +225,15 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
             track.parent().css("width", viewWidth + "px");
             redrawTimebar(timebarEl, currentPlayerTime.get());
             function onStartTimelineDrag(e) {
+
+                currentPlayerTime.suspend(true);
                 currentMouseX = previousMouseX = e.pageX;
                 dragTimeout = setInterval(onDragging, 40);
                 $(document).mousemove(registerMouse)
             }
 
             function onStopDragging(e) {
+                currentPlayerTime.suspend(false);
                 $(document).unbind("onmousemove");
                 clearInterval(dragTimeout);
             }
@@ -384,6 +387,7 @@ directives.directive('trackItem', function (subtitleList, currentPlayerTime) {
                 if(controller ){
                     //controller.setActive(true);
                 }
+                currentPlayerTime.suspend(true);
                 onStartDrag(event, elm, subtitle, scope);
                 $(document).mouseup(function(event){
                     $(document).unbind('mousemove') ;
@@ -393,6 +397,8 @@ directives.directive('trackItem', function (subtitleList, currentPlayerTime) {
                         //controller.setActive(false);
                     }
                     });
+
+                    currentPlayerTime.suspend(false);
                 })
             })
         }

@@ -17,6 +17,11 @@
             <button class="pauseBig" ng-switch-when='true' ng-click='onPlayPausePressed()'>Pause</button>
         </ng-switch>
         <span class='currentPlayerTime large'>{{playheadTime|toClockTime}}{{playheadTime|timeFraction}}</span>
+        <select name="playTimeMode" ng-model="playTimeMode">
+            <option value="shortbursts">Play for 4 seconds</option>
+            <option value="nomanagement">You're on your own</option>
+            <option value="typingdetection">Play while you type</option>
+        </select>
     </div>
     <div ng-view></div>
 </div>

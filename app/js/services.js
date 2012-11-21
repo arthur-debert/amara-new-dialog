@@ -93,6 +93,7 @@ var subtitleDataServices = angular.module('myApp.subtitleDataServices', [], func
         var lastTimeStamp = undefined;
         var suspended = false;
         var BURST_TIME = 4000;
+        var STOP_PLAYING_AFTER_SILENCE_TIME = 1000;
         var NO_MANAGEMENT = 'nomanagement';
         var SHORT_BURSTS = 'shortbursts';
         var TYPING_DETECTION = 'typingdetection';
@@ -106,14 +107,15 @@ var subtitleDataServices = angular.module('myApp.subtitleDataServices', [], func
             if (!suspended) {
                 currentTime += (newTime - lastTimeStamp);
                 $scope.$broadcast("playerTimeChanged", currentTime)
-                if (playTimeMode == SHORT_BURSTS && currentTime > stopPlayingAt){
-                    playPauseService.pause();
+                if ((playTimeMode == SHORT_BURSTS || playTimeMode == TYPING_DETECTION)
+                    &&  currentTime > stopPlayingAt){
+                    playTimeService.pause();
                 }
             }
             lastTimeStamp = newTime;
         }
 
-        var playPauseService =  {
+        var playTimeService =  {
             /**
              * If suspended and playing, won't updated the current time.
              * This is used when user interaction (timeline dragging, or
@@ -160,11 +162,19 @@ var subtitleDataServices = angular.module('myApp.subtitleDataServices', [], func
                 timeInterval = setInterval(updatePlayTime, 10)
                 if (playTimeMode == SHORT_BURSTS){
                     stopPlayingAt = currentTime + BURST_TIME;
+                }else if (playTimeMode == TYPING_DETECTION){
+                    stopPlayingAt = currentTime + STOP_PLAYING_AFTER_SILENCE_TIME;
                 }
             },
             pause:function () {
                 clearInterval(timeInterval);
                 timeInterval = undefined;
+            },
+            playTimeMode : function(newValue){
+                if (newValue !== undefined){
+                    playTimeMode = newValue;
+                }
+                return playTimeMode;
             }
         }
 
@@ -177,7 +187,7 @@ var subtitleDataServices = angular.module('myApp.subtitleDataServices', [], func
             if (isTab && !userIsEditing){
                 event.preventDefault();
                 if (playTimeMode == NO_MANAGEMENT){
-                    playTimeService.playPause()
+                    playTimeService.playPause();
                     return;
                 }else  if (playTimeMode == TYPING_DETECTION){
                     return;
@@ -187,19 +197,23 @@ var subtitleDataServices = angular.module('myApp.subtitleDataServices', [], func
                         stopPlayingAt = currentTime  + SHORT_BURSTS;
                     }else{
                         stopPlayingAt = Math.min(totalDuration - BURST_TIME, currentTime + BURST_TIME);
-                        if (playPauseService.isPlaying()){
-                            playPauseService.pause();
+                        if (playTimeService.isPlaying()){
+                            playTimeService.pause();
                             return;
                         }
 
                     }
-                    if (!playPauseService.isPlaying()){
-                        playPauseService.play();
+                    if (!playTimeService.isPlaying()){
+                        playTimeService.play();
                     }
+                }
+            }else{
+                if (playTimeMode == TYPING_DETECTION){
+                    stopPlayingAt = currentTime + STOP_PLAYING_AFTER_SILENCE_TIME;
                 }
             }
 
         });
-        return playPauseService;
+        return playTimeService;
     }])
 });

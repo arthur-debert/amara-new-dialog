@@ -197,7 +197,7 @@ ul.subtitleList li.active{
     color: white;
     position: absolute;
     height:27px;
-    padding: 12px 3px 1px 4px;
+    padding: 12px 0px 1px 0px;
     font-size: 11px;
     white-space: nowrap;
     overflow: hidden;
@@ -224,3 +224,9 @@ ul.subtitleList li.active{
     border-radius: 4px;
 }
 
+.timeline .subtitleBubble .text{
+
+    margin-left: 3px;
+    margin-right: 4px:
+
+}

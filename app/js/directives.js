@@ -278,7 +278,7 @@ directives.directive('subtitleBubble', function (subtitleList, currentPlayerTime
     function repositionSubtitle(elm, subtitle, currentTime) {
         var pos = getSubtitlePos(subtitle, currentTime);
         elm.css(pos);
-        elm.text(subtitle.text);
+        //elm.text(subtitle.text);
     }
 
     function onMoving(event, element, subtitle, minDragPos, maxDragPos, mouseOffset){

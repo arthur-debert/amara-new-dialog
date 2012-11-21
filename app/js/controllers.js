@@ -55,6 +55,7 @@ function VideoPlayerCallToAction($scope, currentPlayerTime){
     $scope.isPlaying = currentPlayerTime.isPlaying();
     $scope.updatePlayheadTime = function(newTime){
         $scope.playheadTime = newTime;
+        $scope.isPlaying = currentPlayerTime.isPlaying();
     };
     $scope.$on("playerTimeChanged", function(event, newTime){
         $scope.updatePlayheadTime(newTime);

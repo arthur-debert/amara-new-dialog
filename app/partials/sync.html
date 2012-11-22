@@ -20,7 +20,7 @@
             <input ng-model="newSubtitleText" required placeholder="Add subtitle"/>
         </form>
         <ul class="subtitleList" subtitle-list >
-            <li ng-repeat='subtitle in subtitles' amara-editable-subtitle ng-controller='EditableSubtitle'>
+            <li ng-repeat='subtitle in subtitles' amara-editable-subtitle ng-class='activeClass' ng-controller='EditableSubtitle'>
                 <span class="subtitleTime small">{{subtitle.startTime|toClockTime}}</span><br>
                 <p contenteditable="true" ng-model="subtitle.text" ng-bind='subtitle.text'>{{subtitle.text}}</p>
                 <div ng-show="active">

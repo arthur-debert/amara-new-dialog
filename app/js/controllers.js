@@ -7,7 +7,8 @@ function EditableSubtitle($scope){
     $scope.active = false;
     this.setActive = function(isActive){
         $scope.active = !!isActive;
-    }
+        $scope.activeClass = $scope.active ? "active" : "";
+    };
 
 }
 
@@ -21,14 +22,14 @@ function SubtitleList($scope, subtitleList, currentPlayerTime) {
         var subtitle  = subtitleList.addSubtitle({'text':text})
         $scope.newSubtitleText = '';
         //currentPlayerTime.set(subtitle.starTime)
-    }
+    };
     $scope.resetSubtitling = function(){
         $scope.subtitles = subtitleList.resetStep('beforeSubtitling');
-    }
+    };
     $scope.onSubtitlesInViewChanged = function(newSubtitles){
         $scope.subtitlesInView = newSubtitles ;
         console.log("subs updated")
-    }
+    };
 
 }
 //SubtitleList.$inject(["$scope", "subtitleList"])
@@ -41,10 +42,10 @@ function Track($scope, subtitleList, currentPlayerTime){
         $scope.$apply(function(){
             $scope.subtitlesInView= $scope.$parent.subtitlesInView = subs.slice();
 
-        })
+        });
 
 
-    }
+    };
 
 }
 //Track.$inject(["$scope", "subtitleList", "currentPlayerTime"])
@@ -63,7 +64,7 @@ function VideoPlayerCallToAction($scope, currentPlayerTime){
     });
     $scope.onPlayPausePressed = function (){
         $scope.isPlaying = currentPlayerTime.playPause();
-    }
+    };
     $scope.$watch("playTimeMode", function(){
         currentPlayerTime.playTimeMode($scope.playTimeMode);
     });

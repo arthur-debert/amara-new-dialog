@@ -13,17 +13,17 @@ var markerEveryMilliseconds = 500;
 
 function getTimeToStart(currentTime, millisecondsPerView){
     var timeStart = 0;
-    if ((currentTime - millisecondsPerView/2 ) > 0){
-        timeStart = currentTime - millisecondsPerView/2;
+    if ((currentTime - millisecondsPerView / 2 ) > 0) {
+        timeStart = currentTime - millisecondsPerView / 2;
     }
     return timeStart;
 }
 
-function cssPropToPixels(val){
+function cssPropToPixels(val) {
     return parseInt(val.substring(0, val.indexOf('p')));
 }
 function timeToPixels(time, currentTime) {
-    return time * pixelsPerMillisecond ;
+    return time * pixelsPerMillisecond;
 }
 function pixelsToTime(pixels) {
     return parseInt(pixels / pixelsPerMillisecond)
@@ -38,10 +38,10 @@ function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView)
     // time to start drawing must be to the left of the screen
     // because some elements will begin off view port, but will
     // end already on viewport
-    var startSecond = Math.ceil((startTime - (millisecondsPerView/3)) / 1000);
+    var startSecond = Math.ceil((startTime - (millisecondsPerView / 3)) / 1000);
     var endSecond = Math.ceil(finalTime / 1000);
-    var step = Math.ceil((endSecond - startSecond) / (millisecondsPerView)/ markerEveryMilliseconds);
-    for (var i = startSecond; i <= endSecond; i+=step){
+    var step = Math.ceil((endSecond - startSecond) / (millisecondsPerView) / markerEveryMilliseconds);
+    for (var i = startSecond; i <= endSecond; i += step) {
         var nextMarkerT = i * 1000;
         if (nextMarkerT < finalTime) {
             times.push(nextMarkerT);
@@ -51,19 +51,22 @@ function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView)
 }
 
 var directives = angular.module('myApp.directives', []);
-directives.directive('subtitleList', function (subtitleList, currentPlayerTime) {
+directives.directive('subtitleList', function (subtitleList, currentPlayerTime, pubsub) {
     var hasWindowResize = false;
-    function resizeSubtitleList(window, elm){
+
+
+    function resizeSubtitleList(window, elm) {
         var height = $(window).height() - $(elm).offset().top - 2;
         height = Math.max(40, height);
         $(elm).css("height", height + "px");
     }
+
     return {
         link:function (scope, elm, attrs) {
 
             var elm = elm;
-            if (! hasWindowResize){
-                $(window).resize(function(event){
+            if (!hasWindowResize) {
+                $(window).resize(function (event) {
                     resizeSubtitleList(window, elm);
                 })
             }
@@ -72,10 +75,11 @@ directives.directive('subtitleList', function (subtitleList, currentPlayerTime) 
     }
 });
 
-directives.directive('amaraEditableSubtitle', function (subtitleList, currentPlayerTime) {
+directives.directive('amaraEditableSubtitle', function (subtitleList, currentPlayerTime, pubsub) {
     var hasWindowResize = false;
-    return {
+    var obj =  {
         link:function (scope, elm, attrs) {
+
             var textOnFocus = null;
             var el = angular.element(elm[0]);
             var editableParagrah = $(elm[0]).children("p")[0];
@@ -86,7 +90,7 @@ directives.directive('amaraEditableSubtitle', function (subtitleList, currentPla
                 textOnFocus = $(editableParagrah).text();
                 // this little monster is the helper that
                 // selects all text in a div.
-                window.setTimeout(function() {
+                window.setTimeout(function () {
                     var sel, range;
                     if (window.getSelection && document.createRange) {
                         range = document.createRange();
@@ -108,12 +112,12 @@ directives.directive('amaraEditableSubtitle', function (subtitleList, currentPla
                 $(el).removeClass("active");
                 angular.element(el).controller().setActive(false);
                 var text = $(editableParagrah).text();
-                if(!String.prototype.trim) {
-                    text  = text.replace(/^\s+|\s+$/g,'');
-                }else{
+                if (!String.prototype.trim) {
+                    text = text.replace(/^\s+|\s+$/g, '');
+                } else {
                     text = text.trim();
                 }
-                if (text == ''){
+                if (text == '') {
                     $(editableParagrah).text(textOnFocus);
                     return;
                 }
@@ -123,8 +127,8 @@ directives.directive('amaraEditableSubtitle', function (subtitleList, currentPla
                 });
                 scope.$emit("subtitleChanged")
             }, false);
-            $(editableParagrah).keypress(function(event){
-                if (event.keyCode == 13 && ! event.shiftKey){
+            $(editableParagrah).keypress(function (event) {
+                if (event.keyCode == 13 && !event.shiftKey) {
                     event.preventDefault();
                     editableParagrah.blur();
                 }
@@ -139,10 +143,20 @@ directives.directive('amaraEditableSubtitle', function (subtitleList, currentPla
                 scope.subtitle.endTime < currentTime) {
                 el.addClass("currentlyPlaying");
             }
+
+            function onSubtitleSelected(isSelected){
+                if (isSelected){
+                    el.get(0).scrollIntoView(true);
+                }
+                el.controller().setActive(isSelected);
+            }
+            // watch for changes to this specific sub
+            pubsub.subscribe("subtitleSelected_" + scope.$index, onSubtitleSelected)
         }
     };
+    return obj;
 });
-directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerTime ) {
+directives.directive('syncPanel', function ($filter, subtitleList, currentPlayerTime) {
     /**
      * The time line is composed of two parts.
      * The strip with the time markers (which is draggeable)
@@ -154,7 +168,7 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
     var timeNeedle;
 
 
-    function redrawTimebar( timebarEl, currentTime) {
+    function redrawTimebar(timebarEl, currentTime) {
         var timeStart = getTimeToStart(currentTime, millisecondsPerView);
         var xOffset = timeToPixels(timeStart);
         var timebarToMove = $(".timelineInner", timebarEl);
@@ -164,17 +178,17 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
         $(timebarToMove).css('left', -xOffset);
         var markerTimes = getMarkerTimes(timeStart, markerEveryMilliseconds, millisecondsPerView);
         _.each(markerTimes, function (markerTime, i) {
-            var xPos = timeToPixels(markerTime) ;
+            var xPos = timeToPixels(markerTime);
             var ticker = $("<div>").
                 addClass("ticker").
-                text($filter("toClockTime")(markerTime )).
+                text($filter("toClockTime")(markerTime)).
                 css("left", xPos);
             timebarToMove.append(ticker);
 
         });
 
         // the needle is svg positioned as absolute
-        $(timeNeedle).css('left' , timeToPixels(currentTime) -xOffset );
+        $(timeNeedle).css('left', timeToPixels(currentTime) - xOffset);
 
 
     }
@@ -261,7 +275,7 @@ directives.directive('syncPanel', function ($filter,subtitleList, currentPlayerT
         }
     }
 });
-directives.directive('trackItem', function (subtitleList, currentPlayerTime) {
+directives.directive('trackItem', function (subtitleList, currentPlayerTime, pubsub) {
 
     var MIN_SUBTITLE_DURATION = 500;
     var draggingMode = null;
@@ -270,29 +284,32 @@ directives.directive('trackItem', function (subtitleList, currentPlayerTime) {
     var minNewTime = null;
     var maxNewTime = null;
     var draggingInterval = null;
-    var playerTimeOffset  = null;
-    function getItemPos(subtitle, currentTime){
+    var playerTimeOffset = null;
+
+    function getItemPos(subtitle, currentTime) {
         return {
-            left: timeToPixels(subtitle.startTime) ,
-            width : timeToPixels(subtitle.endTime - subtitle.startTime)
+            left:timeToPixels(subtitle.startTime),
+            width:timeToPixels(subtitle.endTime - subtitle.startTime)
         }
 
     }
+
     function repositionItem(elm, subtitle, currentTime) {
         var pos = getItemPos(subtitle, currentTime);
         elm.css(pos);
     }
 
-    function onMoving(event, element, subtitle, minDragPos, maxDragPos, mouseOffset){
-        var targetX = event.pageX -  mouseOffset ;
-        if (targetX > minDragPos && targetX + cssPropToPixels(element.css("width"))< maxDragPos){
+    function onMoving(event, element, subtitle, minDragPos, maxDragPos, mouseOffset) {
+        var targetX = event.pageX - mouseOffset;
+        if (targetX > minDragPos && targetX + cssPropToPixels(element.css("width")) < maxDragPos) {
             var duration = subtitle.endTime - subtitle.startTime;
-           subtitle.startTime = pixelsToTime(targetX - element.parent().offset().left) ;
+            subtitle.startTime = pixelsToTime(targetX - element.parent().offset().left);
             subtitle.endTime = subtitle.startTime + duration;
 
         }
     }
-    function onResizing(event, element, subtitle, previousSubtitle, nextSubtitle, minNewTime, maxNewTime){
+
+    function onResizing(event, element, subtitle, previousSubtitle, nextSubtitle, minNewTime, maxNewTime) {
         var targetX = event.pageX - element.parent().offset().left;
         var firstTargetX = targetX;
 
@@ -300,62 +317,63 @@ directives.directive('trackItem', function (subtitleList, currentPlayerTime) {
         targetX = Math.min(timeToPixels(maxNewTime), targetX);
         var left = cssPropToPixels(element.css("left"));
         var width = cssPropToPixels(element.css("width"));
-            if (resizingStartTime){
-                // if start time, move initial, keep final pos intact
-                subtitle.startTime = pixelsToTime(targetX) ;
-                var duration = subtitle.endTime - subtitle.startTime;
-                if (previousSubtitle && subtitle.startTime <= previousSubtitle.endTime &&
-                    subtitle.startTime > minNewTime){
-                    previousSubtitle.endTime = subtitle.startTime;
-                }
-            }else{
-                // end time, let left alone, increase width
-                var newWidth = targetX - left;
-                subtitle.endTime = pixelsToTime( left + newWidth );
-                if (nextSubtitle && subtitle.endTime >= nextSubtitle.startTime &&
-                    subtitle.endTime < maxNewTime){
-                    nextSubtitle.startTime = subtitle.endTime;
-                }
+        if (resizingStartTime) {
+            // if start time, move initial, keep final pos intact
+            subtitle.startTime = pixelsToTime(targetX);
+            var duration = subtitle.endTime - subtitle.startTime;
+            if (previousSubtitle && subtitle.startTime <= previousSubtitle.endTime &&
+                subtitle.startTime > minNewTime) {
+                previousSubtitle.endTime = subtitle.startTime;
             }
+        } else {
+            // end time, let left alone, increase width
+            var newWidth = targetX - left;
+            subtitle.endTime = pixelsToTime(left + newWidth);
+            if (nextSubtitle && subtitle.endTime >= nextSubtitle.startTime &&
+                subtitle.endTime < maxNewTime) {
+                nextSubtitle.startTime = subtitle.endTime;
+            }
+        }
     }
 
-    function onStartDrag(event, element, subtitle, scope){
+    function onStartDrag(event, element, subtitle, scope) {
 
         // get the x pos relative to the parent div
         startDraggingX = event.pageX - element.parent().offset().left;
         playerTimeOffset = timeToPixels(currentPlayerTime.get());
         var previousSubtitle = subtitleList.getPrevious(subtitle);
         var nextSubtitle = subtitleList.getNext(subtitle);
-       if(element.css('cursor')=='move') {
-           startDraggingX = event.pageX - element.offset().left;
-           draggingMode = 'moving';
-           var minDragPos = previousSubtitle ?
-               timeToPixels(previousSubtitle.endTime) + element.parent().offset().left : 1;
-           var maxDragPos = nextSubtitle? timeToPixels(nextSubtitle.startTime) + element.parent().offset().left : 500000;
-           var mouseOffset = event.pageX - element.offset().left;
-           $(document).mousemove (function(event) {
-               onMoving(event, element, subtitle, minDragPos, maxDragPos, mouseOffset);
-               scope.$root.$broadcast("subtitleChanged")
-           });
-       }else{
-           draggingMode = 'resizing';
-           var x = event.pageX - $(element).offset().left;
-           var RESIZE_HIT_AREA = 10;
-           resizingStartTime = false;
-           if (x <= RESIZE_HIT_AREA ){
+        if (element.css('cursor') == 'move') {
+            startDraggingX = event.pageX - element.offset().left;
+            draggingMode = 'moving';
+            var minDragPos = previousSubtitle ?
+                timeToPixels(previousSubtitle.endTime) + element.parent().offset().left : 1;
+            var maxDragPos = nextSubtitle ? timeToPixels(nextSubtitle.startTime) + element.parent().offset().left : 500000;
+            var mouseOffset = event.pageX - element.offset().left;
+            $(document).mousemove(function (event) {
+                onMoving(event, element, subtitle, minDragPos, maxDragPos, mouseOffset);
+                scope.$root.$broadcast("subtitleChanged")
+            });
+        } else {
+            draggingMode = 'resizing';
+            var x = event.pageX - $(element).offset().left;
+            var RESIZE_HIT_AREA = 10;
+            resizingStartTime = false;
+            if (x <= RESIZE_HIT_AREA) {
                 resizingStartTime = true;
-               minNewTime = previousSubtitle? previousSubtitle.startTime + MIN_SUBTITLE_DURATION: 0;
-               maxNewTime = subtitle.endTime - MIN_SUBTITLE_DURATION;
-            }else{
-               maxNewTime = nextSubtitle ? nextSubtitle.endTime - MIN_SUBTITLE_DURATION: 30000;
-               minNewTime = subtitle.startTime + MIN_SUBTITLE_DURATION;
-           }
-           $(document).mousemove (function(event) {
-               onResizing(event, element, subtitle, previousSubtitle, nextSubtitle , minNewTime, maxNewTime );
-               scope.$root.$broadcast("subtitleChanged")
-           });
-       }
+                minNewTime = previousSubtitle ? previousSubtitle.startTime + MIN_SUBTITLE_DURATION : 0;
+                maxNewTime = subtitle.endTime - MIN_SUBTITLE_DURATION;
+            } else {
+                maxNewTime = nextSubtitle ? nextSubtitle.endTime - MIN_SUBTITLE_DURATION : 30000;
+                minNewTime = subtitle.startTime + MIN_SUBTITLE_DURATION;
+            }
+            $(document).mousemove(function (event) {
+                onResizing(event, element, subtitle, previousSubtitle, nextSubtitle, minNewTime, maxNewTime);
+                scope.$root.$broadcast("subtitleChanged")
+            });
+        }
     }
+
     function onTrackItemMouseMove(element, subtitle, event) {
         var cursorType = 'move';
         var x = event.pageX - $(element).offset().left;
@@ -375,27 +393,31 @@ directives.directive('trackItem', function (subtitleList, currentPlayerTime) {
             elm.mousemove(function (event) {
                 onTrackItemMouseMove(elm, subtitle, event);
             });
-            scope.$on('playerTimeChanged', function(event, newTime){
+            scope.$on('playerTimeChanged', function (event, newTime) {
                 repositionItem(elm, scope.subtitle, newTime);
             });
             scope.$root.$on("subtitleChanged", function () {
                 repositionItem(elm, scope.subtitle, currentPlayerTime.get());
             });
             repositionItem(elm, scope.subtitle, currentPlayerTime.get());
-            elm.mousedown(function(event){
+            elm.mousedown(function (event) {
+                scope.selectedTrackItem = subtitle;
+                pubsub.publish("subtitleSelected_" + _.indexOf(subtitleList.get(), subtitle), [true]);
+                scope.$root.$broadcast("onTrackItemSelected", subtitle);
                 var controller = elm.controller();
-                if(controller ){
+                if (controller) {
                     //controller.setActive(true);
                 }
                 currentPlayerTime.suspend(true);
                 onStartDrag(event, elm, subtitle, scope);
-                $(document).mouseup(function(event){
-                    $(document).unbind('mousemove') ;
-                    scope.$root.$apply(function(){
-                    scope.$root.subtitles = subtitleList.get();
-                    if(controller ){
-                        //controller.setActive(false);
-                    }
+                $(document).mouseup(function (event) {
+                    $(document).unbind('mousemove');
+                    scope.selectedTrackItem = null;
+                    scope.$root.$apply(function () {
+                        scope.$root.subtitles = subtitleList.get();
+                        _.delay(function(){
+                            pubsub.publish("subtitleSelected_" + _.indexOf(subtitleList.get(), subtitle), [false]);
+                        });
                     });
 
                     currentPlayerTime.suspend(false);
@@ -404,4 +426,5 @@ directives.directive('trackItem', function (subtitleList, currentPlayerTime) {
         }
     };
 });
+
 

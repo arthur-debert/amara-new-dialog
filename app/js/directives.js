@@ -11,7 +11,21 @@ var currentMouseX, previousMouseX = undefined;
 
 var markerEveryMilliseconds = 500;
 
-function getTimeToStart(currentTime, millisecondsPerView){
+function itemsInView(container, childrenSelector) {
+    var min = $(container).offset().top;
+    var max = min + $(container).height();
+    var inView = [];
+    var children = $(childrenSelector, container);
+    for (var i = 0; i < children.length; i++) {
+        var pos = $(children[i]).offset().top;
+        var h = $(children[i]).height() + parseInt($(children[i]).css("padding-top"));
+        if (pos + h > min && pos < max) {
+            inView.push(children[i]);
+        }
+    }
+    return inView;
+}
+function getTimeToStart(currentTime, millisecondsPerView) {
     var timeStart = 0;
     if ((currentTime - millisecondsPerView / 2 ) > 0) {
         timeStart = currentTime - millisecondsPerView / 2;

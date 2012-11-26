@@ -26,10 +26,6 @@ function SubtitleList($scope, subtitleList, currentPlayerTime) {
     $scope.resetSubtitling = function(){
         $scope.subtitles = subtitleList.resetStep('beforeSubtitling');
     };
-    $scope.onSubtitlesInViewChanged = function(newSubtitles){
-        $scope.subtitlesInView = newSubtitles ;
-        console.log("subs updated")
-    };
 
 }
 //SubtitleList.$inject(["$scope", "subtitleList"])

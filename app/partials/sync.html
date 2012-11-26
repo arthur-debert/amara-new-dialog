@@ -1,17 +1,16 @@
-<div  sync-panel>
-    <div class="timebar" >
+<div>
+    <div data-timebar class="timebar">
         <span class="timeNeedle"></span>
         <div class='timelineInner'></div>
     </div>
-    <div class='track' ng-controller='Track'>
+    <div data-timeline-track class='track' ng-controller='Track'>
         <div class='timelineInner'>
-        <div ng-repeat='subtitle in subtitlesInView' ng-controller='TrackItem' data-track-item>
-            <div class="text">{{subtitle.text}}</div>
-        </div>
+            <div ng-repeat='subtitle in subtitlesInView' ng-controller='TrackItem' data-track-item>
+                <div class="text">{{subtitle.text}}</div>
             </div>
+        </div>
     </div>
     <div class='timelineTools'>
-
     </div>
 
 
@@ -19,14 +18,15 @@
         <form class="quickAddSubtitle" ng-submit='addSubtitle(newSubtitleText)'>
             <input ng-model="newSubtitleText" required placeholder="Add subtitle"/>
         </form>
-        <ul class="subtitleList" subtitle-list >
-            <li ng-repeat='subtitle in subtitles' amara-editable-subtitle ng-class='activeClass' ng-controller='EditableSubtitle'>
+        <ul class="subtitleList" subtitle-list>
+            <ng-controller ='EditableSubtitle'>
+            <li ng-repeat='subtitle in subtitles' amara-editable-subtitle ng-class='activeClass'
+                ng-controller='EditableSubtitle'>
+                <a ng-show="active" class='delete' href="#" ng-click="removeSubtitle(subtitle)">X</a>
                 <span class="subtitleTime small">{{subtitle.startTime|toClockTime}}</span><br>
                 <p contenteditable="true" ng-model="subtitle.text" ng-bind='subtitle.text'>{{subtitle.text}}</p>
-                <div ng-show="active">
-                <a  href="#" ng-click="removeSubtitle(subtitle)">X</a>
-                </div>
             </li>
+            </ng-controller>
         </ul>
     </div>
 </div>

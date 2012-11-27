@@ -20,9 +20,8 @@ module.controller('SubtitleList', function ($scope, subtitleList, currentPlayerT
     };
     $scope.addSubtitle = function(text){
         $scope.mustScrollToBottom = true;
-        var subtitle  = subtitleList.addSubtitle({'text':text})
+        var subtitle  = subtitleList.addSubtitle({'text':text});
         $scope.newSubtitleText = '';
-        //currentPlayerTime.set(subtitle.starTime)
     };
     $scope.resetSubtitling = function(){
         $scope.subtitles = subtitleList.resetStep('beforeSubtitling');

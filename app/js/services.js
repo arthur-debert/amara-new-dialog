@@ -5,7 +5,7 @@ function randIntRange(min, max) {
     return Math.floor(min + (Math.random() * max ));
 }
 
-var subtitleDataServices = angular.module('myApp.subtitleDataServices', [], function ($provide) {
+var subtitleDataServices = angular.module('amara.SubtitleEditor.subtitleDataServices', [], function ($provide) {
 
 
     $provide.factory('subtitleList', function () {
@@ -14,7 +14,7 @@ var subtitleDataServices = angular.module('myApp.subtitleDataServices', [], func
         var subtitles = [];
         var currentTime = 0;
         var bacon = "Bacon ipsum dolor sit amet meatloaf kielbasa turducken tail, cow leberkas prosciutto shoulder chuck pork chop turkey swine sausage. Swine beef bacon sausage bresaola. Tri-tip pastrami meatball meatloaf sausage brisket pork chop, ham drumstick shank venison shankle. Pancetta fatback drumstick, leberkas spare ribs chuck pastrami tail biltong prosciutto bacon. Sirloin jerky tongue turkey kielbasa. Strip steak andouille short loin, tail fatback ham hock leberkas pancetta boudin tri-tip tongue. Hamburger t-bone brisket kielbasa."
-        for (var i = 0; i < 100; i++) {
+        for (var i = 0; i < 40; i++) {
             var duration = 1000;
             if (randomizeTimes) {
                 var duration = randIntRange(300, 3000);

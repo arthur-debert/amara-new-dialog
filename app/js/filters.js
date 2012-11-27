@@ -2,7 +2,7 @@
 
 /* Filters */
 
-angular.module('myApp.filters', []).
+angular.module('amara.SubtitleEditor.filters', []).
     filter('toClockTime',function () {
         return function (text) {
             if (!text) {

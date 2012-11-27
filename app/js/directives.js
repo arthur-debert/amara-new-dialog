@@ -64,7 +64,7 @@ function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView)
     return times;
 }
 
-var directives = angular.module('myApp.directives', []);
+var directives = angular.module('amara.SubtitleEditor.directives', []);
 directives.directive('subtitleList', function (subtitleList, currentPlayerTime, pubsub) {
     var hasWindowResize = false;
 

@@ -3,7 +3,7 @@
 /* Controllers */
 
 
-var module  = angular.module('myApp' );
+var module  = angular.module('amara.SubtitleEditor' );
 module.controller('EditableSubtitle', function ($scope){
     $scope.active = false;
     this.setActive = function(isActive){

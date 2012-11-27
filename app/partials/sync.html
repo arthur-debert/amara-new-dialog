@@ -5,7 +5,7 @@
     </div>
     <div data-timeline-track class='track' ng-controller='Track'>
         <div class='timelineInner'>
-            <div ng-repeat='subtitle in subtitlesInView' ng-controller='TrackItem' data-track-item>
+            <div ng-repeat='subtitle in subtitlesInView' ng-controller='TrackItem' data-timeline-track-item>
                 <div class="text">{{subtitle.text}}</div>
             </div>
         </div>

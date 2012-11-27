@@ -29,14 +29,14 @@ module.controller('SubtitleList', function ($scope, subtitleList, currentPlayerT
     };
 });
 
-function Track($scope, subtitleList, currentPlayerTime){
+module.controller('Track', function ($scope, subtitleList, currentPlayerTime){
 
-}
+});
 //Track.$inject(["$scope", "subtitleList", "currentPlayerTime"])
-function TrackItem($scope, subtitleList){
-}
+module.controller('TrackItem', function ($scope, subtitleList){
+});
 
-function VideoPlayerCallToAction($scope, currentPlayerTime){
+module.controller('VideoPlayerCallToAction', function ($scope, currentPlayerTime){
     $scope.isPlaying = currentPlayerTime.isPlaying();
     $scope.playTimeMode = currentPlayerTime.playTimeMode();
     $scope.updatePlayheadTime = function(newTime){
@@ -52,6 +52,6 @@ function VideoPlayerCallToAction($scope, currentPlayerTime){
     $scope.$watch("playTimeMode", function(){
         currentPlayerTime.playTimeMode($scope.playTimeMode);
     });
-}
+});
 //VideoPlayerCallToAction.$inject(["$scope", "subtitleList", "currentPlayerTime"])
 

@@ -31,17 +31,6 @@ function SubtitleList($scope, subtitleList, currentPlayerTime) {
 //SubtitleList.$inject(["$scope", "subtitleList"])
 
 function Track($scope, subtitleList, currentPlayerTime){
-    this.$scope = $scope;
-
-    $scope.magic = "hey"
-    $scope.onTimeChanged = function(subs, newTime){
-        $scope.$apply(function(){
-            $scope.subtitlesInView= $scope.$parent.subtitlesInView = subs.slice();
-
-        });
-
-
-    };
 
 }
 //Track.$inject(["$scope", "subtitleList", "currentPlayerTime"])

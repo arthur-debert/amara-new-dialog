@@ -7,6 +7,23 @@ directives.directive('timebar', function ($filter, subtitleList, currentPlayerTi
      */
     var timeNeedle;
 
+    function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView) {
+        var times = [];
+        var finalTime = startTime + millisecondsPerView;
+        // time to start drawing must be to the left of the screen
+        // because some elements will begin off view port, but will
+        // end already on viewport
+        var startSecond = Math.ceil((startTime - (millisecondsPerView / 3)) / 1000);
+        var endSecond = Math.ceil(finalTime / 1000);
+        var step = Math.ceil((endSecond - startSecond) / (millisecondsPerView) / markerEveryMilliseconds);
+        for (var i = startSecond; i <= endSecond; i += step) {
+            var nextMarkerT = i * 1000;
+            if (nextMarkerT < finalTime) {
+                times.push(nextMarkerT);
+            }
+        }
+        return times;
+    }
 
     function redrawTimebar(timebarEl, currentTime) {
         var timeStart = getTimeToStart(currentTime, millisecondsPerView);

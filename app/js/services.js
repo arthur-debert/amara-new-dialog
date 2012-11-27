@@ -97,7 +97,7 @@ var subtitleDataServices = angular.module('myApp.subtitleDataServices', [], func
         var NO_MANAGEMENT = 'nomanagement';
         var SHORT_BURSTS = 'shortbursts';
         var TYPING_DETECTION = 'typingdetection';
-        var playTimeMode = SHORT_BURSTS;
+        var playTimeMode = NO_MANAGEMENT;
         // if on SHORT_BURSTS, when to stop the player time
         var stopPlayingAt = undefined;
         var totalDuration = 100000;
@@ -106,11 +106,11 @@ var subtitleDataServices = angular.module('myApp.subtitleDataServices', [], func
             var newTime = new Date().getTime();
             if (!suspended) {
                 currentTime += (newTime - lastTimeStamp);
-                $scope.$broadcast("playerTimeChanged", currentTime)
                 if ((playTimeMode == SHORT_BURSTS || playTimeMode == TYPING_DETECTION)
                     &&  currentTime > stopPlayingAt){
                     playTimeService.pause();
                 }
+                $scope.$broadcast("playerTimeChanged", currentTime)
             }
             lastTimeStamp = newTime;
         }

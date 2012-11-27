@@ -7,7 +7,7 @@ directives.directive('timelineTrack', function ($filter, subtitleList, currentPl
      */
 
     function getSubtitlesInView(allSubtitles, currentTime) {
-        var subtitlesInView = [];
+        var inView = [];
         var startTime = getTimeToStart(currentTime, millisecondsPerView);
         var endTime = startTime + millisecondsPerView;
 
@@ -17,10 +17,10 @@ directives.directive('timelineTrack', function ($filter, subtitleList, currentPl
                 break;
             }
             if (subtitle.startTime > startTime || (subtitle.endTime > startTime && subtitle.endTime < endTime )) {
-                subtitlesInView.push(subtitle);
+                inView.push(subtitle);
             }
         }
-        return subtitlesInView;
+        return inView;
     }
 
     return {
@@ -31,9 +31,14 @@ directives.directive('timelineTrack', function ($filter, subtitleList, currentPl
                 var timeStart = getTimeToStart(newTime, millisecondsPerView);
                 var xOffset = timeToPixels(timeStart);
                 $(".timelineInner", elm).css('left', -xOffset);
-                scope.$$childHead.onTimeChanged(getSubtitlesInView(subtitleList.get(), newTime))
-
+                scope.subtitlesInView = getSubtitlesInView(subtitleList.get(), newTime);
+                // can't call $apply, esle the entire SubtitleList view will get updated 
+                // which can be incredibly slow for large number of subtitles. Calling
+                // $digest makes sure we only update *this* scope, so nothing else has
+                // to be marked dirty. Be carefull though, that subtitlesInView should, 
+                // therefore only be called from here
+                scope.$digest();
             });
         }
-    }
+    };
 });

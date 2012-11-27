@@ -1,4 +1,4 @@
-directives.directive('timebar', function ($filter, subtitleList, currentPlayerTime) {
+directives.directive('timebar', function ($filter, subtitleList, currentPlayerTime, timeMapper) {
     /**
      * The time line is composed of two parts.
      * The strip with the time markers (which is draggeable)
@@ -6,6 +6,7 @@ directives.directive('timebar', function ($filter, subtitleList, currentPlayerTi
      * @type {undefined}
      */
     var timeNeedle;
+    var currentMouseX, previousMouseX = undefined;
 
     function getMarkerTimes(startTime, markerEveryMilliseconds, millisecondsPerView) {
         var times = [];
@@ -26,15 +27,18 @@ directives.directive('timebar', function ($filter, subtitleList, currentPlayerTi
     }
 
     function redrawTimebar(timebarEl, currentTime) {
-        var timeStart = getTimeToStart(currentTime, millisecondsPerView);
-        var xOffset = timeToPixels(timeStart);
+        var timeStart = timeMapper.getTimeToStart(currentTime,
+            timeMapper.millisecondsPerView());
+        var xOffset = timeMapper.timeToPixels(timeStart);
         var timebarToMove = $(".timelineInner", timebarEl);
 
         $(timebarToMove).children(".ticker").remove();
         $(timebarToMove).css('left', -xOffset);
-        var markerTimes = getMarkerTimes(timeStart, markerEveryMilliseconds, millisecondsPerView);
+        var markerTimes = getMarkerTimes(timeStart,
+                            timeMapper.markerEveryMilliseconds(),
+                            timeMapper.millisecondsPerView());
         _.each(markerTimes, function (markerTime, i) {
-            var xPos = timeToPixels(markerTime);
+            var xPos = timeMapper.timeToPixels(markerTime);
             var ticker = $("<div>").
                 addClass("ticker").
                 text($filter("toClockTime")(markerTime)).
@@ -43,7 +47,7 @@ directives.directive('timebar', function ($filter, subtitleList, currentPlayerTi
 
         });
         // the needle is svg positioned as absolute
-        $(timeNeedle).css('left', timeToPixels(currentTime) - xOffset);
+        $(timeNeedle).css('left', timeMapper.timeToPixels(currentTime) - xOffset);
 
 
     }
@@ -58,7 +62,7 @@ directives.directive('timebar', function ($filter, subtitleList, currentPlayerTi
         if (xDelta == 0) {
             return;
         }
-        var timeDelta = pixelsToTime(-xDelta);
+        var timeDelta = timeMapper.pixelsToTime(-xDelta);
         var previousTime = currentPlayerTime.get();
         var newTime = previousTime + timeDelta;
         if (newTime != previousTime) {
@@ -72,7 +76,7 @@ directives.directive('timebar', function ($filter, subtitleList, currentPlayerTi
         link:function (scope, elm, attrs) {
             var dragTimeout = undefined;
 
-            elm.css("width", viewWidth + "px");
+            elm.css("width", timeMapper.viewWidth() + "px");
             redrawTimebar(elm, currentPlayerTime.get());
             function onStartTimelineDrag(e) {
                 currentPlayerTime.suspend(true);

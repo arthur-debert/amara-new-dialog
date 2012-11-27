@@ -8,6 +8,7 @@ angular.module('amara.SubtitleEditor', [
         'amara.SubtitleEditor.services.SubtitleData',
         'amara.SubtitleEditor.services.PlayHeadTime',
         'amara.SubtitleEditor.services.Pubsub',
+        'amara.SubtitleEditor.services.ZoomableTimeMapper',
         'amara.SubtitleEditor.directives'
     ]).config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/subtitle', {templateUrl: 'partials/subtitle.html', controller: 'SubtitleList'});

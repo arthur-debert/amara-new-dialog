@@ -1,4 +1,4 @@
-directives.directive('timelineTrack', function ($filter, subtitleList, currentPlayerTime) {
+directives.directive('timelineTrack', function ($filter, subtitleList, currentPlayerTime, timeMapper) {
     /**
      * The time line is composed of two parts.
      * The strip with the time markers (which is draggeable)
@@ -8,8 +8,8 @@ directives.directive('timelineTrack', function ($filter, subtitleList, currentPl
 
     function getSubtitlesInView(allSubtitles, currentTime) {
         var inView = [];
-        var startTime = getTimeToStart(currentTime, millisecondsPerView);
-        var endTime = startTime + millisecondsPerView;
+        var startTime = timeMapper.getTimeToStart(currentTime, timeMapper.millisecondsPerView());
+        var endTime = startTime + timeMapper.millisecondsPerView();
 
         for (var i = 0; i < allSubtitles.length; i++) {
             var subtitle = allSubtitles[i];
@@ -25,11 +25,11 @@ directives.directive('timelineTrack', function ($filter, subtitleList, currentPl
 
     return {
         link:function (scope, elm, attrs) {
-            elm.parent().css("width", viewWidth + "px");
+            elm.parent().css("width", timeMapper.viewWidth() + "px");
             scope.subtitlesInView = getSubtitlesInView(subtitleList.get(), currentPlayerTime.get());
             scope.$on("playerTimeChanged", function (event, newTime) {
-                var timeStart = getTimeToStart(newTime, millisecondsPerView);
-                var xOffset = timeToPixels(timeStart);
+                var timeStart = timeMapper.getTimeToStart(newTime, timeMapper.millisecondsPerView());
+                var xOffset = timeMapper.timeToPixels(timeStart);
                 $(".timelineInner", elm).css('left', -xOffset);
                 scope.subtitlesInView = getSubtitlesInView(subtitleList.get(), newTime);
                 // can't call $apply, esle the entire SubtitleList view will get updated 

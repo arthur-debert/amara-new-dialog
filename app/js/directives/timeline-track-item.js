@@ -1,4 +1,4 @@
-directives.directive('timelineTrackItem', function (subtitleList, currentPlayerTime, pubsub) {
+directives.directive('timelineTrackItem', function (subtitleList, currentPlayerTime, pubsub, timeMapper) {
 
     var MIN_SUBTITLE_DURATION = 500;
     var draggingMode = null;
@@ -9,10 +9,13 @@ directives.directive('timelineTrackItem', function (subtitleList, currentPlayerT
     var draggingInterval = null;
     var playerTimeOffset = null;
 
+    function cssPropToPixels(val) {
+        return parseInt(val.substring(0, val.indexOf('p')));
+    }
     function getItemPos(subtitle, currentTime) {
         return {
-            left:timeToPixels(subtitle.startTime),
-            width:timeToPixels(subtitle.endTime - subtitle.startTime)
+            left:timeMapper.timeToPixels(subtitle.startTime),
+            width:timeMapper.timeToPixels(subtitle.endTime - subtitle.startTime)
         }
 
     }
@@ -26,7 +29,7 @@ directives.directive('timelineTrackItem', function (subtitleList, currentPlayerT
         var targetX = event.pageX - mouseOffset;
         if (targetX > minDragPos && targetX + cssPropToPixels(element.css("width")) < maxDragPos) {
             var duration = subtitle.endTime - subtitle.startTime;
-            subtitle.startTime = pixelsToTime(targetX - element.parent().offset().left);
+            subtitle.startTime = timeMapper.pixelsToTime(targetX - element.parent().offset().left);
             subtitle.endTime = subtitle.startTime + duration;
 
         }
@@ -36,13 +39,13 @@ directives.directive('timelineTrackItem', function (subtitleList, currentPlayerT
         var targetX = event.pageX - element.parent().offset().left;
         var firstTargetX = targetX;
 
-        targetX = Math.max(timeToPixels(minNewTime), targetX);
-        targetX = Math.min(timeToPixels(maxNewTime), targetX);
+        targetX = Math.max(timeMapper.timeToPixels(minNewTime), targetX);
+        targetX = Math.min(timeMapper.timeToPixels(maxNewTime), targetX);
         var left = cssPropToPixels(element.css("left"));
         var width = cssPropToPixels(element.css("width"));
         if (resizingStartTime) {
             // if start time, move initial, keep final pos intact
-            subtitle.startTime = pixelsToTime(targetX);
+            subtitle.startTime = timeMapper.pixelsToTime(targetX);
             var duration = subtitle.endTime - subtitle.startTime;
             if (previousSubtitle && subtitle.startTime <= previousSubtitle.endTime &&
                 subtitle.startTime > minNewTime) {
@@ -51,7 +54,7 @@ directives.directive('timelineTrackItem', function (subtitleList, currentPlayerT
         } else {
             // end time, let left alone, increase width
             var newWidth = targetX - left;
-            subtitle.endTime = pixelsToTime(left + newWidth);
+            subtitle.endTime = timeMapper.pixelsToTime(left + newWidth);
             if (nextSubtitle && subtitle.endTime >= nextSubtitle.startTime &&
                 subtitle.endTime < maxNewTime) {
                 nextSubtitle.startTime = subtitle.endTime;
@@ -63,15 +66,15 @@ directives.directive('timelineTrackItem', function (subtitleList, currentPlayerT
 
         // get the x pos relative to the parent div
         startDraggingX = event.pageX - element.parent().offset().left;
-        playerTimeOffset = timeToPixels(currentPlayerTime.get());
+        playerTimeOffset = timeMapper.timeToPixels(currentPlayerTime.get());
         var previousSubtitle = subtitleList.getPrevious(subtitle);
         var nextSubtitle = subtitleList.getNext(subtitle);
         if (element.css('cursor') == 'move') {
             startDraggingX = event.pageX - element.offset().left;
             draggingMode = 'moving';
             var minDragPos = previousSubtitle ?
-                timeToPixels(previousSubtitle.endTime) + element.parent().offset().left : 1;
-            var maxDragPos = nextSubtitle ? timeToPixels(nextSubtitle.startTime) + element.parent().offset().left : 500000;
+                timeMapper.timeToPixels(previousSubtitle.endTime) + element.parent().offset().left : 1;
+            var maxDragPos = nextSubtitle ? timeMapper.timeToPixels(nextSubtitle.startTime) + element.parent().offset().left : 500000;
             var mouseOffset = event.pageX - element.offset().left;
             $(document).mousemove(function (event) {
                 onMoving(event, element, subtitle, minDragPos, maxDragPos, mouseOffset);

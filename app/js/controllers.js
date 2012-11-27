@@ -3,16 +3,17 @@
 /* Controllers */
 
 
-function EditableSubtitle($scope){
+var module  = angular.module('myApp' );
+module.controller('EditableSubtitle', function ($scope){
     $scope.active = false;
     this.setActive = function(isActive){
         $scope.active = !!isActive;
         $scope.activeClass = $scope.active ? "active" : "";
     };
 
-}
+});
 
-function SubtitleList($scope, subtitleList, currentPlayerTime) {
+module.controller('SubtitleList', function ($scope, subtitleList, currentPlayerTime){
     $scope.subtitles = subtitleList.get();
     $scope.removeSubtitle = function(subtitle){
         subtitleList.removeSubtitle(subtitle);
@@ -26,9 +27,7 @@ function SubtitleList($scope, subtitleList, currentPlayerTime) {
     $scope.resetSubtitling = function(){
         $scope.subtitles = subtitleList.resetStep('beforeSubtitling');
     };
-
-}
-//SubtitleList.$inject(["$scope", "subtitleList"])
+});
 
 function Track($scope, subtitleList, currentPlayerTime){
 

@@ -50,22 +50,6 @@ directives.directive('timebar', function ($filter, subtitleList, currentPlayerTi
         }
     }
 
-    function getSubtitlesInView(allSubtitles, currentTime) {
-        var subtitlesInView = [];
-        var startTime = getTimeToStart(currentTime, millisecondsPerView);
-        var endTime = startTime + millisecondsPerView;
-
-        for (var i = 0; i < allSubtitles.length; i++) {
-            var subtitle = allSubtitles[i];
-            if (subtitle.startTime > endTime) {
-                break;
-            }
-            if (subtitle.startTime > startTime || (subtitle.endTime > startTime && subtitle.endTime < endTime )) {
-                subtitlesInView.push(subtitle);
-            }
-        }
-        return subtitlesInView;
-    }
 
     return {
         link:function (scope, elm, attrs) {
@@ -100,7 +84,6 @@ directives.directive('timebar', function ($filter, subtitleList, currentPlayerTi
             scope.$on("subtitleChanged", function () {
                 redrawTimebar(elm, currentPlayerTime.get());
             });
-            scope.subtitlesInView = getSubtitlesInView(subtitleList.get(), currentPlayerTime.get());
             scope.$on("playerTimeChanged", function (event, newTime) {
                 redrawTimebar(elm, newTime);
 
